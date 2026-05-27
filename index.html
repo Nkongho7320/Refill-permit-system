@@ -1,0 +1,1885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECW GmbH – Work Permit System | IAW/TRM Leuna</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --red: #C8102E;
+  --red-dim: rgba(200,16,46,0.12);
+  --yellow: #F5C800;
+  --yellow-dim: rgba(245,200,0,0.1);
+  --bg: #0A0A0A;
+  --surface: #111111;
+  --surface2: #181818;
+  --surface3: #202020;
+  --border: #2A2A2A;
+  --border2: #333333;
+  --text: #E0E0E0;
+  --muted: #666666;
+  --muted2: #888888;
+  --green: #22C55E;
+  --green-dim: rgba(34,197,94,0.1);
+  --orange: #F97316;
+  --orange-dim: rgba(249,115,22,0.1);
+  --blue: #3B82F6;
+  --blue-dim: rgba(59,130,246,0.1);
+  --sig-red: #FF3B3B;
+  --sig-red-dim: rgba(255,59,59,0.08);
+  --radius: 3px;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+  --cond: 'IBM Plex Sans Condensed', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ── TOPBAR ─────────────────────────────────────────────── */
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+}
+.topbar-inner {
+  display: flex;
+  align-items: stretch;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.topbar-logo {
+  background: var(--red);
+  padding: 10px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-right: 2px solid var(--yellow);
+  min-width: 90px;
+}
+.topbar-logo span:first-child {
+  font-family: var(--cond);
+  font-weight: 700;
+  font-size: 15px;
+  color: #fff;
+  letter-spacing: 0.06em;
+}
+.topbar-logo span:last-child {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.topbar-title {
+  flex: 1;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.topbar-title h1 {
+  font-family: var(--cond);
+  font-weight: 700;
+  font-size: 16px;
+  color: #fff;
+  letter-spacing: 0.03em;
+  line-height: 1.1;
+}
+.topbar-title p {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--muted2);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+.topbar-week {
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: right;
+  border-left: 1px solid var(--border);
+}
+.topbar-week .wk-label {
+  font-family: var(--mono);
+  font-size: 8px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.topbar-week .wk-val {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--yellow);
+  font-weight: 600;
+}
+.topbar-week .wk-renew {
+  font-family: var(--mono);
+  font-size: 8px;
+  color: var(--green);
+  letter-spacing: 0.04em;
+}
+
+/* ── PROGRESS STEPPER ───────────────────────────────────── */
+.stepper-wrap {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0;
+}
+.stepper {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  overflow-x: auto;
+}
+.step-btn {
+  flex: 1;
+  min-width: 110px;
+  padding: 12px 8px;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+  position: relative;
+}
+.step-btn:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0; top: 50%; transform: translateY(-50%);
+  height: 24px; width: 1px;
+  background: var(--border);
+}
+.step-btn .s-num {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  display: block;
+  margin-bottom: 3px;
+}
+.step-btn .s-label {
+  font-family: var(--cond);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted2);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  display: block;
+}
+.step-btn .s-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--border2);
+  margin: 4px auto 0;
+}
+.step-btn.active { border-bottom-color: var(--yellow); }
+.step-btn.active .s-num { color: var(--yellow); }
+.step-btn.active .s-label { color: #fff; }
+.step-btn.active .s-dot { background: var(--yellow); }
+.step-btn.done { border-bottom-color: var(--green); }
+.step-btn.done .s-num { color: var(--green); }
+.step-btn.done .s-label { color: var(--green); }
+.step-btn.done .s-dot { background: var(--green); }
+.step-btn.sig-step.active { border-bottom-color: var(--sig-red); }
+.step-btn.sig-step.active .s-num { color: var(--sig-red); }
+.step-btn.sig-step.active .s-label { color: var(--sig-red); }
+.step-btn.sig-step.active .s-dot { background: var(--sig-red); }
+
+/* ── MAIN LAYOUT ────────────────────────────────────────── */
+.main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 28px 16px 60px;
+}
+
+/* ── PANELS ─────────────────────────────────────────────── */
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* ── PANEL HEADER ───────────────────────────────────────── */
+.panel-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+}
+.ph-num {
+  font-family: var(--mono);
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--border2);
+  line-height: 1;
+  min-width: 40px;
+}
+.ph-num.red { color: var(--red); }
+.ph-num.yellow { color: var(--yellow); }
+.ph-num.green { color: var(--green); }
+.ph-num.sigred { color: var(--sig-red); }
+.ph-text h2 {
+  font-family: var(--cond);
+  font-weight: 700;
+  font-size: 22px;
+  color: #fff;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+}
+.ph-text p {
+  font-size: 13px;
+  color: var(--muted2);
+  margin-top: 4px;
+}
+.ph-badge {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 9px;
+  padding: 4px 10px;
+  border-radius: var(--radius);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  align-self: flex-start;
+}
+.ph-badge.contractor { background: var(--blue-dim); color: var(--blue); border: 1px solid var(--blue); }
+.ph-badge.sigeko { background: var(--sig-red-dim); color: var(--sig-red); border: 1px solid var(--sig-red); }
+.ph-badge.all { background: var(--orange-dim); color: var(--orange); border: 1px solid var(--orange); }
+
+/* ── FORM ELEMENTS ──────────────────────────────────────── */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.form-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+.form-grid.full, .form-full { grid-column: 1 / -1; }
+@media (max-width: 640px) {
+  .form-grid, .form-grid.three { grid-template-columns: 1fr; }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.field label {
+  font-family: var(--mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted2);
+}
+.field label span.req { color: var(--sig-red); margin-left: 2px; }
+.field label span.role {
+  margin-left: 6px;
+  background: var(--blue-dim);
+  color: var(--blue);
+  padding: 1px 5px;
+  border-radius: 2px;
+  font-size: 8px;
+}
+
+.field input, .field select, .field textarea {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 13px;
+  padding: 9px 11px;
+  transition: border-color 0.15s;
+  width: 100%;
+  outline: none;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  border-color: var(--yellow);
+}
+.field textarea { resize: vertical; min-height: 70px; }
+.field select option { background: var(--surface2); }
+
+/* ── SECTION TITLE ──────────────────────────────────────── */
+.sec-title {
+  font-family: var(--mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  padding: 14px 0 8px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sec-title::before {
+  content: '';
+  width: 3px; height: 12px;
+  background: var(--yellow);
+  border-radius: 1px;
+}
+.sec-title.red::before { background: var(--sig-red); }
+.sec-title.green::before { background: var(--green); }
+.sec-title.orange::before { background: var(--orange); }
+
+/* ── CHECKBOX GRID ──────────────────────────────────────── */
+.check-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+  user-select: none;
+}
+.check-item:hover { border-color: var(--border2); background: var(--surface3); }
+.check-item.checked { border-color: var(--yellow); background: var(--yellow-dim); }
+.check-item.checked.red-check { border-color: var(--sig-red); background: var(--sig-red-dim); }
+.check-box {
+  width: 16px; height: 16px;
+  border: 1.5px solid var(--border2);
+  border-radius: 2px;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+  transition: all 0.15s;
+}
+.check-item.checked .check-box { background: var(--yellow); border-color: var(--yellow); color: var(--bg); }
+.check-item.checked.red-check .check-box { background: var(--sig-red); border-color: var(--sig-red); color: #fff; }
+.check-label { font-size: 12px; color: var(--text); }
+
+/* ── EQUIPMENT TABLE ────────────────────────────────────── */
+.eq-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+.eq-table th {
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  padding: 7px 10px;
+  font-family: var(--mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted2);
+  text-align: left;
+  font-weight: 500;
+}
+.eq-table td {
+  border: 1px solid var(--border);
+  padding: 4px;
+}
+.eq-table td input {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 12px;
+  padding: 4px 6px;
+  width: 100%;
+  outline: none;
+}
+.eq-table td input:focus { background: var(--surface3); }
+.eq-table tr:nth-child(even) { background: rgba(255,255,255,0.01); }
+
+/* ── INFO BOX ────────────────────────────────────────────── */
+.info-box {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--blue);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  font-size: 12px;
+  color: var(--muted2);
+  margin-bottom: 14px;
+  line-height: 1.7;
+}
+.info-box.warn { border-left-color: var(--orange); }
+.info-box.danger { border-left-color: var(--sig-red); background: var(--sig-red-dim); color: #ffcccc; }
+.info-box.success { border-left-color: var(--green); background: var(--green-dim); color: #bbffcc; }
+.info-box strong { color: var(--text); }
+
+/* ── GAS TABLE ───────────────────────────────────────────── */
+.gas-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.gas-table th {
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  padding: 7px 10px;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  color: var(--muted2);
+  text-align: left;
+  text-transform: uppercase;
+}
+.gas-table td {
+  border: 1px solid var(--border);
+  padding: 4px;
+}
+.gas-table td input {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 5px 8px;
+  width: 100%;
+  outline: none;
+}
+.gas-table td input:focus { background: var(--surface3); }
+.gas-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+}
+.gas-status.ok { background: var(--green-dim); color: var(--green); border: 1px solid var(--green); }
+.gas-status.nok { background: var(--sig-red-dim); color: var(--sig-red); border: 1px solid var(--sig-red); }
+
+/* ── SIGNATURE BLOCK ─────────────────────────────────────── */
+.sig-panel {
+  background: var(--sig-red-dim);
+  border: 1px solid var(--sig-red);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 14px;
+}
+.sig-panel-title {
+  font-family: var(--mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--sig-red);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sig-panel-title::before { content: '✎'; font-size: 14px; }
+.sig-confirm-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  background: rgba(0,0,0,0.3);
+  border-radius: var(--radius);
+  border: 1px solid rgba(255,59,59,0.2);
+}
+.sig-confirm-row input[type="checkbox"] {
+  width: 18px; height: 18px;
+  flex-shrink: 0;
+  accent-color: var(--sig-red);
+  cursor: pointer;
+  margin-top: 2px;
+}
+.sig-confirm-text { font-size: 12px; color: #ffcccc; line-height: 1.6; }
+.sig-name-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+.sig-name-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.sig-name-field label {
+  font-family: var(--mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--sig-red);
+}
+.sig-name-field input {
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,59,59,0.4);
+  border-radius: var(--radius);
+  color: #fff;
+  font-family: var(--mono);
+  font-size: 13px;
+  padding: 8px 10px;
+  outline: none;
+  width: 100%;
+  transition: border-color 0.15s;
+}
+.sig-name-field input:focus { border-color: var(--sig-red); }
+.sig-timestamp {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted2);
+  margin-top: 6px;
+}
+
+/* ── VALIDITY DISPLAY ────────────────────────────────────── */
+.validity-bar {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.vb-item { display: flex; flex-direction: column; gap: 2px; }
+.vb-label { font-family: var(--mono); font-size: 8px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+.vb-value { font-family: var(--mono); font-size: 14px; color: var(--yellow); font-weight: 600; }
+.vb-value.green { color: var(--green); }
+.vb-value.red { color: var(--sig-red); }
+.vb-divider { width: 1px; height: 32px; background: var(--border); }
+
+/* ── WORKER TABLE ─────────────────────────────────────────── */
+.worker-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.worker-table th {
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  padding: 7px 10px;
+  font-family: var(--mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted2);
+  text-align: left;
+}
+.worker-table td {
+  border: 1px solid var(--border);
+  padding: 4px;
+}
+.worker-table td input {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 12px;
+  padding: 5px 8px;
+  width: 100%;
+  outline: none;
+}
+.worker-table td input:focus { background: var(--surface3); }
+.worker-table tr:nth-child(even) { background: rgba(255,255,255,0.01); }
+.worker-sig-cell {
+  display: flex; align-items: center; justify-content: center;
+}
+.worker-sig-cell input[type="checkbox"] {
+  width: 16px; height: 16px;
+  accent-color: var(--sig-red);
+  cursor: pointer;
+}
+
+/* ── PERMIT STATUS CARD ───────────────────────────────────── */
+.status-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 12px;
+}
+.status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.status-row:last-child { border-bottom: none; padding-bottom: 0; }
+.status-role { font-weight: 600; font-size: 13px; }
+.status-detail { font-size: 11px; color: var(--muted2); font-family: var(--mono); }
+.status-badge {
+  font-family: var(--mono);
+  font-size: 9px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.status-badge.pending { background: var(--orange-dim); color: var(--orange); border: 1px solid var(--orange); }
+.status-badge.signed { background: var(--green-dim); color: var(--green); border: 1px solid var(--green); }
+.status-badge.waiting { background: var(--surface3); color: var(--muted2); border: 1px solid var(--border); }
+
+/* ── PERMIT NUMBER ───────────────────────────────────────── */
+.permit-number {
+  font-family: var(--mono);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--yellow);
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+.permit-sub {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+}
+
+/* ── REVIEW TABLE ─────────────────────────────────────────── */
+.review-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 14px; }
+.review-table tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+.review-table td {
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.review-table td:first-child {
+  font-family: var(--mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted2);
+  min-width: 130px;
+  padding-top: 9px;
+}
+.review-table td:last-child { color: var(--text); }
+
+/* ── BUTTONS ─────────────────────────────────────────────── */
+.btn-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+.btn {
+  padding: 11px 22px;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-primary {
+  background: var(--yellow);
+  color: var(--bg);
+}
+.btn-primary:hover { background: #ffd700; transform: translateY(-1px); }
+.btn-secondary {
+  background: var(--surface3);
+  color: var(--muted2);
+  border: 1px solid var(--border2);
+}
+.btn-secondary:hover { color: var(--text); border-color: var(--muted2); }
+.btn-danger {
+  background: var(--sig-red-dim);
+  color: var(--sig-red);
+  border: 1px solid var(--sig-red);
+}
+.btn-danger:hover { background: rgba(255,59,59,0.2); }
+.btn-success {
+  background: var(--green-dim);
+  color: var(--green);
+  border: 1px solid var(--green);
+}
+.btn-success:hover { background: rgba(34,197,94,0.2); }
+.btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none !important; }
+
+/* ── WEEKLY RENEWAL BANNER ───────────────────────────────── */
+.renewal-banner {
+  background: linear-gradient(135deg, #0a1a0a 0%, #0d200d 100%);
+  border: 1px solid var(--green);
+  border-left: 4px solid var(--green);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.renewal-icon { font-size: 22px; }
+.renewal-text { flex: 1; }
+.renewal-text strong { color: var(--green); display: block; font-size: 13px; margin-bottom: 2px; }
+.renewal-text span { font-size: 11px; color: var(--muted2); font-family: var(--mono); }
+
+/* ── TIMELINE ─────────────────────────────────────────────── */
+.timeline {
+  position: relative;
+  padding-left: 24px;
+  margin-bottom: 16px;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 7px; top: 8px; bottom: 8px;
+  width: 1px;
+  background: var(--border2);
+}
+.tl-item {
+  position: relative;
+  margin-bottom: 14px;
+  padding: 10px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.tl-item::before {
+  content: '';
+  position: absolute;
+  left: -20px; top: 14px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--border2);
+  border: 2px solid var(--bg);
+}
+.tl-item.done::before { background: var(--green); }
+.tl-item.active::before { background: var(--yellow); }
+.tl-item.pending::before { background: var(--border2); }
+.tl-time { font-family: var(--mono); font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+.tl-title { font-weight: 600; font-size: 13px; margin-bottom: 2px; }
+.tl-desc { font-size: 11px; color: var(--muted2); }
+
+/* ── RELEASED PERMIT VIEW ─────────────────────────────────── */
+.released-banner {
+  background: linear-gradient(135deg, #001a08 0%, #002210 100%);
+  border: 2px solid var(--green);
+  border-radius: var(--radius);
+  padding: 24px;
+  text-align: center;
+  margin-bottom: 24px;
+}
+.released-banner h2 {
+  font-family: var(--cond);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--green);
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+.released-banner p { font-size: 12px; color: rgba(34,197,94,0.7); font-family: var(--mono); }
+
+/* ── ADD ROW BUTTON ──────────────────────────────────────── */
+.add-row-btn {
+  background: none;
+  border: 1px dashed var(--border2);
+  border-radius: var(--radius);
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 7px 14px;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.15s;
+  margin-top: 4px;
+}
+.add-row-btn:hover { border-color: var(--yellow); color: var(--yellow); }
+
+/* ── SCROLLBAR ───────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+.mt8 { margin-top: 8px; }
+.mt14 { margin-top: 14px; }
+.mb8 { margin-bottom: 8px; }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="topbar-logo">
+      <span>ECW</span>
+      <span>GmbH</span>
+    </div>
+    <div class="topbar-title">
+      <h1>Work Permit System – Arbeitserlaubnisschein</h1>
+      <p>IAW / TRM Leuna-Leipzig · Fernwärmetrasse · Weekly Renewal: Every Tuesday</p>
+    </div>
+    <div class="topbar-week">
+      <span class="wk-label">Permit Week</span>
+      <span class="wk-val" id="currentWeek">–</span>
+      <span class="wk-renew" id="renewalDate">–</span>
+    </div>
+  </div>
+</div>
+
+<!-- STEPPER -->
+<div class="stepper-wrap">
+  <div class="stepper">
+    <button class="step-btn active" onclick="goTo(0)" id="step0">
+      <span class="s-num">01</span>
+      <span class="s-label">Job Info</span>
+      <div class="s-dot"></div>
+    </button>
+    <button class="step-btn" onclick="goTo(1)" id="step1">
+      <span class="s-num">02</span>
+      <span class="s-label">Tätigkeit</span>
+      <div class="s-dot"></div>
+    </button>
+    <button class="step-btn" onclick="goTo(2)" id="step2">
+      <span class="s-num">03</span>
+      <span class="s-label">Hazards & PPE</span>
+      <div class="s-dot"></div>
+    </button>
+    <button class="step-btn" onclick="goTo(3)" id="step3">
+      <span class="s-num">04</span>
+      <span class="s-label">Gas & Emergency</span>
+      <div class="s-dot"></div>
+    </button>
+    <button class="step-btn sig-step" onclick="goTo(4)" id="step4">
+      <span class="s-num">05</span>
+      <span class="s-label">SiGeKo Review</span>
+      <div class="s-dot"></div>
+    </button>
+    <button class="step-btn sig-step" onclick="goTo(5)" id="step5">
+      <span class="s-num">06</span>
+      <span class="s-label">Briefing & Sig.</span>
+      <div class="s-dot"></div>
+    </button>
+    <button class="step-btn sig-step" onclick="goTo(6)" id="step6">
+      <span class="s-num">07</span>
+      <span class="s-label">Release</span>
+      <div class="s-dot"></div>
+    </button>
+    <button class="step-btn" onclick="goTo(7)" id="step7">
+      <span class="s-num">08</span>
+      <span class="s-label">Active Permit</span>
+      <div class="s-dot"></div>
+    </button>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- PANEL 0: GENERAL INFO (Contractor fills) -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="panel active" id="panel0">
+  <div class="panel-header">
+    <div class="ph-num red">01</div>
+    <div class="ph-text">
+      <h2>General Information / Allgemeine Angaben</h2>
+      <p>Contractor submits job identification details before Tuesday's coordination meeting</p>
+    </div>
+    <div class="ph-badge contractor">Contractor</div>
+  </div>
+
+  <div class="renewal-banner">
+    <div class="renewal-icon">📅</div>
+    <div class="renewal-text">
+      <strong>Weekly Permit Cycle – Renewal Every Tuesday</strong>
+      <span>Submit new permit requests by Monday 15:00 for review at Tuesday's coordination meeting. Valid: Tuesday 06:00 → next Monday 22:00.</span>
+    </div>
+  </div>
+
+  <div class="sec-title">Permit Identity</div>
+  <div class="form-grid">
+    <div class="field">
+      <label>Permit Number <span class="req">*</span></label>
+      <input type="text" id="permitNo" placeholder="Auto: ECW-TRM-2026-001" readonly style="color:var(--yellow);font-family:var(--mono);">
+    </div>
+    <div class="field">
+      <label>Issue Date <span class="req">*</span></label>
+      <input type="date" id="issueDate">
+    </div>
+    <div class="field">
+      <label>Valid From <span class="req">*</span></label>
+      <input type="datetime-local" id="validFrom">
+    </div>
+    <div class="field">
+      <label>Valid Until (next Tuesday renewal) <span class="req">*</span></label>
+      <input type="datetime-local" id="validUntil" readonly style="color:var(--green);font-family:var(--mono);">
+    </div>
+  </div>
+
+  <div class="sec-title mt8">Company & Location</div>
+  <div class="form-grid">
+    <div class="field">
+      <label>Executing Company / Ausführende Firma <span class="req">*</span></label>
+      <input type="text" id="company" placeholder="e.g. Vorwerk Rohrleitungsbau GmbH">
+    </div>
+    <div class="field">
+      <label>Subcontractor (if applicable)</label>
+      <input type="text" id="subcontractor" placeholder="Company name + contact person">
+    </div>
+    <div class="field">
+      <label>Foreman / Polier <span class="req">*</span></label>
+      <input type="text" id="foreman" placeholder="Full name">
+    </div>
+    <div class="field">
+      <label>Foreman Mobile <span class="req">*</span></label>
+      <input type="tel" id="foremanTel" placeholder="+49 …">
+    </div>
+    <div class="field">
+      <label>Bauabschnitt / BA <span class="req">*</span></label>
+      <select id="ba">
+        <option value="">— Select BA —</option>
+        <option>BA Q2</option>
+        <option>BA Q3</option>
+        <option>BA Q2/Q3</option>
+        <option>BA Wüst</option>
+        <option>BA Q10</option>
+        <option>BA Q4</option>
+        <option>BA DES</option>
+        <option>BA BA2</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Shift / Schicht <span class="req">*</span></label>
+      <select id="shift">
+        <option>Frühschicht (06:00–14:00)</option>
+        <option>Spätschicht (14:00–22:00)</option>
+        <option>Nachtschicht (22:00–06:00)</option>
+        <option>Tagschicht (07:00–17:00)</option>
+      </select>
+    </div>
+    <div class="field form-full">
+      <label>Exact Location / Genaue Örtlichkeit <span class="req">*</span></label>
+      <input type="text" id="location" placeholder="e.g. Axis 14, chainage 1+450, depth -2.8m, BA Q3 trench section">
+    </div>
+    <div class="field">
+      <label>Drawing / GB-Nr.</label>
+      <input type="text" id="drawing" placeholder="Drawing number">
+    </div>
+    <div class="field">
+      <label>SiGePlan Revision <span class="req">*</span></label>
+      <input type="text" id="sigePlan" placeholder="e.g. Rev. 04">
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="advance(0)">Next: Tätigkeitsbeschreibung →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- PANEL 1: TÄTIGKEITSBESCHREIBUNG (Contractor fills) -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="panel" id="panel1">
+  <div class="panel-header">
+    <div class="ph-num yellow">02</div>
+    <div class="ph-text">
+      <h2>Tätigkeitsbeschreibung / Task Description</h2>
+      <p>Contractor describes the work – SiGeKo reviews and may add conditions in Step 05</p>
+    </div>
+    <div class="ph-badge contractor">Contractor</div>
+  </div>
+
+  <div class="sec-title">Permit Type / Tätigkeitsart</div>
+  <div class="info-box warn"><strong>Select all that apply.</strong> Each selection may activate additional mandatory requirements (fire watch, gas measurement). Under-declaration is a compliance failure.</div>
+  <div class="check-grid" id="permitTypeGrid">
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">🔥 Heißarbeiten (Welding/Cutting/Grinding)</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">⬛ Confined Space / Ex-Zone</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">⚡ Work near live voltage</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">⛏ Earthworks / Excavations</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">📏 Fall hazard > 1m</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">💨 Dust / Gases / Vapours</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">🏗 Crane / Suspended loads</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">☣ Chemicals / Hazardous substances</span></div>
+  </div>
+  <div class="field mt8">
+    <label>Other / Sonstige</label>
+    <input type="text" id="otherType" placeholder="Describe additional permit type if not listed above">
+  </div>
+
+  <div class="sec-title mt8">Task Description / Tätigkeitsbeschreibung</div>
+  <div class="field">
+    <label>What is being done? Method? Tools? / Was wird gemacht? Methode? Werkzeuge? <span class="req">*</span></label>
+    <textarea id="taskDesc" rows="4" placeholder="e.g. Pipe welding DN 400 steel, arc welding method, welder unit Type X + angle grinder Type Y – in open trench BA Q3, axis 14, depth approx. 2.5m. No hot works within TRM exclusion zone."></textarea>
+  </div>
+
+  <div class="sec-title mt8">Equipment / Gerätetabelle</div>
+  <table class="eq-table" id="eqTable">
+    <thead>
+      <tr>
+        <th>Device / Gerät</th>
+        <th>Type / Hersteller</th>
+        <th>Next UVV Inspection</th>
+        <th>Operator Name</th>
+        <th>Qualification / Schein</th>
+      </tr>
+    </thead>
+    <tbody id="eqBody">
+      <tr>
+        <td><input type="text" placeholder="e.g. Excavator"></td>
+        <td><input type="text" placeholder="e.g. Liebherr 914"></td>
+        <td><input type="date"></td>
+        <td><input type="text" placeholder="Name"></td>
+        <td><input type="text" placeholder="Cert. No."></td>
+      </tr>
+      <tr>
+        <td><input type="text" placeholder="e.g. Welding unit"></td>
+        <td><input type="text" placeholder="Type"></td>
+        <td><input type="date"></td>
+        <td><input type="text" placeholder="Name"></td>
+        <td><input type="text" placeholder="Cert. No."></td>
+      </tr>
+    </tbody>
+  </table>
+  <button class="add-row-btn" onclick="addEqRow()">+ Add equipment row</button>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="goTo(0)">← Back</button>
+    <button class="btn btn-primary" onclick="advance(1)">Next: Hazards & PPE →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- PANEL 2: HAZARDS & PPE (Contractor fills) -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="panel" id="panel2">
+  <div class="panel-header">
+    <div class="ph-num yellow">03</div>
+    <div class="ph-text">
+      <h2>Hazard Analysis & Controls / Gefährdungsanalyse & Maßnahmen</h2>
+      <p>Contractor identifies hazards and proposes controls – SiGeKo may add further conditions</p>
+    </div>
+    <div class="ph-badge contractor">Contractor</div>
+  </div>
+
+  <div class="sec-title">Identified Hazards / Gefährdungen</div>
+  <div class="check-grid" id="hazardGrid">
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">🔥 Fire hazard</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">📏 Fall from height</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">⚡ Electrical hazard</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">⬛ Confined space / pit</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">💨 Dust / gases / vapours</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">🏗 Crane / suspended loads</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">⛏ Excavation / ground collapse</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">💥 Explosion risk (Ex-Zone)</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">🔊 Noise > 85 dB(A)</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">☣ Hazardous substances</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">📳 Vibration (HAV/WBV)</span></div>
+  </div>
+
+  <div class="sec-title mt8">Control Measures / Schutzmaßnahmen</div>
+  <div class="check-grid" id="controlGrid">
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">🚧 Area cordoned off (barrier tape)</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">🚧 Protective fence H=1m</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">🚧 Protective fence H=2m</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">🧯 Fire extinguisher on site</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">👁 Safety observer assigned</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">📢 Adjacent trades informed</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">🪵 DIN 4124 shoring installed</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">✋ Hand excavation in protection zone</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">📋 Utility plans (Spartenpläne) available</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">💨 Ventilation active</span></div>
+  </div>
+
+  <div class="sec-title mt8 orange">PPE Requirements / PSA-Spezifikation</div>
+  <div class="check-grid" id="ppeGrid">
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">🪖 Safety helmet EN 397</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">👟 Safety shoes S3 EN ISO 20345</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">🦺 Hi-vis vest EN ISO 20471</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">🥽 Safety glasses EN 166</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">🔇 Hearing protection EN 352</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">🧤 Protective gloves</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">😷 Respiratory protection EN 149</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">🪝 Fall arrest PSAgA EN 361</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">🧥 Welder protection EN 11611</span></div>
+  </div>
+  <div class="field mt8">
+    <label>Additional PPE / Weitere PSA</label>
+    <input type="text" placeholder="e.g. P2 dust mask, chemical splash goggles …">
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="goTo(1)">← Back</button>
+    <button class="btn btn-primary" onclick="advance(2)">Next: Gas & Emergency →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- PANEL 3: GAS & EMERGENCY -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="panel" id="panel3">
+  <div class="panel-header">
+    <div class="ph-num yellow">04</div>
+    <div class="ph-text">
+      <h2>Gas Measurement & Emergency Plan</h2>
+      <p>Complete if confined space / Ex-Zone selected. Emergency plan is always mandatory.</p>
+    </div>
+    <div class="ph-badge contractor">Contractor</div>
+  </div>
+
+  <div class="sec-title">Gas Measurement / Gasfreimessung</div>
+  <div class="info-box">
+    <strong>Required if:</strong> Confined Space / Ex-Zone ticked in Step 02. On TRM site: additional TRM gas clearance is always required before work – confirm with TRM separately.
+  </div>
+  <div class="form-grid">
+    <div class="field">
+      <label>Measuring Device Type</label>
+      <input type="text" id="gasDevice" placeholder="e.g. Dräger X-am 5100">
+    </div>
+    <div class="field">
+      <label>Calibration Valid Until</label>
+      <input type="date" id="gasCal">
+    </div>
+    <div class="field">
+      <label>Measurement Responsible (Name)</label>
+      <input type="text" id="gasPerson" placeholder="Full name">
+    </div>
+    <div class="field">
+      <label>Repeat Interval</label>
+      <select id="gasInterval">
+        <option>Every 1 hour</option>
+        <option>Every 2 hours</option>
+        <option>Every 4 hours</option>
+        <option>Continuously (fixed sensor)</option>
+      </select>
+    </div>
+  </div>
+
+  <table class="gas-table mt8" id="gasTable">
+    <thead>
+      <tr>
+        <th>Measurement</th>
+        <th>O₂ Vol% (19.5–23%)</th>
+        <th>Ex %LEL (&lt;20%)</th>
+        <th>CO ppm (≤20)</th>
+        <th>H₂S ppm (≤1)</th>
+        <th>Time</th>
+        <th>Result</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="padding:8px 10px;font-family:var(--mono);font-size:11px;color:var(--muted2)">Measurement 1</td>
+        <td><input type="number" step="0.1" placeholder="20.9" oninput="evalGas()"></td>
+        <td><input type="number" step="0.1" placeholder="0" oninput="evalGas()"></td>
+        <td><input type="number" step="1" placeholder="0" oninput="evalGas()"></td>
+        <td><input type="number" step="0.1" placeholder="0" oninput="evalGas()"></td>
+        <td><input type="time"></td>
+        <td id="gas1res"><span class="gas-status waiting" style="background:var(--surface3);color:var(--muted2);border:1px solid var(--border);">—</span></td>
+      </tr>
+      <tr>
+        <td style="padding:8px 10px;font-family:var(--mono);font-size:11px;color:var(--muted2)">Measurement 2</td>
+        <td><input type="number" step="0.1" placeholder="20.9" oninput="evalGas()"></td>
+        <td><input type="number" step="0.1" placeholder="0" oninput="evalGas()"></td>
+        <td><input type="number" step="1" placeholder="0" oninput="evalGas()"></td>
+        <td><input type="number" step="0.1" placeholder="0" oninput="evalGas()"></td>
+        <td><input type="time"></td>
+        <td id="gas2res"><span class="gas-status waiting" style="background:var(--surface3);color:var(--muted2);border:1px solid var(--border);">—</span></td>
+      </tr>
+      <tr>
+        <td style="padding:8px 10px;font-family:var(--mono);font-size:11px;color:var(--muted2)">Measurement 3</td>
+        <td><input type="number" step="0.1" placeholder="20.9" oninput="evalGas()"></td>
+        <td><input type="number" step="0.1" placeholder="0" oninput="evalGas()"></td>
+        <td><input type="number" step="1" placeholder="0" oninput="evalGas()"></td>
+        <td><input type="number" step="0.1" placeholder="0" oninput="evalGas()"></td>
+        <td><input type="time"></td>
+        <td id="gas3res"><span class="gas-status waiting" style="background:var(--surface3);color:var(--muted2);border:1px solid var(--border);">—</span></td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:6px;">Ref: DGUV Regel 113-004 · TRGS 722 · TRGS 900 (AGW)</div>
+
+  <div class="sec-title mt8 orange">Emergency Plan / Notfallplan</div>
+  <div class="info-box warn"><strong>Always mandatory – no exceptions.</strong> Every worker must know this before starting work.</div>
+  <div class="form-grid">
+    <div class="field">
+      <label>Assembly Point / Sammelplatz <span class="req">*</span></label>
+      <input type="text" id="assembly" placeholder="e.g. North car park, Gate 2 (not: 'near container')">
+    </div>
+    <div class="field">
+      <label>Rescue Access / Rettungszufahrt <span class="req">*</span></label>
+      <input type="text" id="rescueAccess" placeholder="e.g. Via Haupttor, then right 200m">
+    </div>
+    <div class="field">
+      <label>First Aider Name / Ersthelfer <span class="req">*</span></label>
+      <input type="text" id="firstAider" placeholder="Name (must be on site)">
+    </div>
+    <div class="field">
+      <label>First Aider Mobile <span class="req">*</span></label>
+      <input type="tel" id="firstAiderTel" placeholder="+49 …">
+    </div>
+    <div class="field">
+      <label>First Aid Kit Location</label>
+      <input type="text" id="firstAidKit" placeholder="e.g. Site container, Room 2">
+    </div>
+    <div class="field">
+      <label>AED Location</label>
+      <input type="text" id="aed" placeholder="e.g. Main gate building, ground floor">
+    </div>
+    <div class="field">
+      <label>Nearest Hospital / Nächstes KH <span class="req">*</span></label>
+      <input type="text" id="hospital" placeholder="Name + address">
+    </div>
+    <div class="field">
+      <label>Internal Emergency No.</label>
+      <input type="text" id="internalNo" placeholder="e.g. TRM Security: 03461-xxx">
+    </div>
+  </div>
+  <div class="check-grid mt8">
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">✅ TRM Alarm Protocol on site</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">✅ IAW Safety Concept confirmed</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">📻 Communication: Radio (Funk)</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">📱 Communication: Mobile phone</span></div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="goTo(2)">← Back</button>
+    <button class="btn btn-primary" onclick="advance(3)">Submit to SiGeKo for Review →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- PANEL 4: SiGeKo REVIEW -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="panel" id="panel4">
+  <div class="panel-header">
+    <div class="ph-num sigred">05</div>
+    <div class="ph-text">
+      <h2>SiGeKo Review & Special Conditions</h2>
+      <p>SiGeKo reviews contractor submission, adds conditions, verifies checklist – typically at Tuesday coordination meeting</p>
+    </div>
+    <div class="ph-badge sigeko">SiGeKo Only</div>
+  </div>
+
+  <div class="info-box danger">
+    <strong>⚠ This section is completed exclusively by the SiGeKo.</strong> No contractor, subcontractor or site manager may fill or modify these fields. Any conditions added here are legally binding and override contractor proposals.
+  </div>
+
+  <div class="sec-title red">SiGeKo Mandatory Checklist</div>
+  <div class="check-grid" id="sigekoCheckGrid">
+    <div class="check-item" onclick="toggleCheck(this,'red-check')"><div class="check-box"></div><span class="check-label">TRM Alarm Protocol on site &amp; known</span></div>
+    <div class="check-item" onclick="toggleCheck(this,'red-check')"><div class="check-box"></div><span class="check-label">IAW Safety Concept handed over &amp; confirmed</span></div>
+    <div class="check-item" onclick="toggleCheck(this,'red-check')"><div class="check-box"></div><span class="check-label">Baustellenordnung / Site rules posted</span></div>
+    <div class="check-item" onclick="toggleCheck(this,'red-check')"><div class="check-box"></div><span class="check-label">SiGe-Plan revision current &amp; valid</span></div>
+    <div class="check-item" onclick="toggleCheck(this,'red-check')"><div class="check-box"></div><span class="check-label">TRM gas clearance required before start</span></div>
+    <div class="check-item" onclick="toggleCheck(this,'red-check')"><div class="check-box"></div><span class="check-label">PSAgA anchor points inspected</span></div>
+    <div class="check-item" onclick="toggleCheck(this,'red-check')"><div class="check-box"></div><span class="check-label">DIN 4124 shoring verified</span></div>
+    <div class="check-item" onclick="toggleCheck(this,'red-check')"><div class="check-box"></div><span class="check-label">TRM restriction: open flame prohibited</span></div>
+    <div class="check-item" onclick="toggleCheck(this,'red-check')"><div class="check-box"></div><span class="check-label">Hot work permit from TRM (if applicable)</span></div>
+    <div class="check-item" onclick="toggleCheck(this,'red-check')"><div class="check-box"></div><span class="check-label">Interface with adjacent trades cleared</span></div>
+  </div>
+
+  <div class="sec-title mt8 red">Additional SiGeKo Conditions / Weitere Auflagen</div>
+  <div class="field">
+    <label>Special conditions, restrictions, or requirements from SiGeKo <span class="req">*</span></label>
+    <textarea id="sigekoConditions" rows="4" placeholder="e.g. Excavation only with trench lining per DIN 4124 · Dust: P2 mask mandatory at all times · Concrete cutting: active extraction system required · No parallel hot works within 10m · BA Wüst: TRM exclusion zone – SiGeKo on site during all deep excavations …"></textarea>
+  </div>
+
+  <div class="sec-title mt8 red">Interface Coordination / Schnittstellenkoordination</div>
+  <div class="form-grid">
+    <div class="field">
+      <label>Simultaneous trades in same area</label>
+      <input type="text" id="adjacentTrades" placeholder="e.g. Implenia (pipe laying), Bassenberg (concrete)">
+    </div>
+    <div class="field">
+      <label>Coordinated with (Name)</label>
+      <input type="text" id="coordWith" placeholder="Contact person name">
+    </div>
+    <div class="field">
+      <label>Fire Watch Required?</label>
+      <select id="fireWatch">
+        <option value="no">No – no hot works</option>
+        <option value="yes">Yes – hot works planned</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Fire Watch Person Name</label>
+      <input type="text" id="fireWatchPerson" placeholder="Name (not the welder)">
+    </div>
+  </div>
+
+  <div class="sec-title mt8 red">Weekly Renewal Notes (Tuesday meeting)</div>
+  <div class="field">
+    <label>Notes from Tuesday coordination / Bemerkungen Koordinierungsbesprechung</label>
+    <textarea id="tuesdayNotes" rows="3" placeholder="Record any changes, new findings, or escalations from the Tuesday meeting that affect this permit …"></textarea>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="goTo(3)">← Back to Contractor Fields</button>
+    <button class="btn btn-danger" onclick="goTo(3)" style="margin-left:auto;">⚠ Request Revision from Contractor</button>
+    <button class="btn btn-primary" onclick="advance(4)">Approved – Proceed to Briefing →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- PANEL 5: SAFETY BRIEFING & WORKER SIGNATURES -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="panel" id="panel5">
+  <div class="panel-header">
+    <div class="ph-num sigred">06</div>
+    <div class="ph-text">
+      <h2>Safety Briefing Record / Unterweisungsnachweis</h2>
+      <p>Every worker must confirm briefing received. No signature = no deployment.</p>
+    </div>
+    <div class="ph-badge all">All Workers</div>
+  </div>
+
+  <div class="info-box danger">
+    <strong>⚠ Every worker on this permit must sign below.</strong> The briefing must cover the specific hazards and controls from Steps 03 and 05 – not generic safety slides. No signature = worker may not start work.
+  </div>
+
+  <div class="sec-title red">Worker Briefing Signatures / Unterweisungsunterschriften</div>
+  <table class="worker-table" id="workerTable">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Name (Block letters)</th>
+        <th>Function / Qualification</th>
+        <th>Date</th>
+        <th>Briefing Received ✓</th>
+      </tr>
+    </thead>
+    <tbody id="workerBody">
+      <tr>
+        <td style="padding:8px 10px;font-family:var(--mono);font-size:10px;color:var(--muted2);text-align:center">1</td>
+        <td><input type="text" placeholder="SURNAME, Firstname"></td>
+        <td><input type="text" placeholder="e.g. Welder DVS 1111"></td>
+        <td><input type="date"></td>
+        <td style="text-align:center"><input type="checkbox" style="width:18px;height:18px;accent-color:var(--sig-red);cursor:pointer;"></td>
+      </tr>
+      <tr>
+        <td style="padding:8px 10px;font-family:var(--mono);font-size:10px;color:var(--muted2);text-align:center">2</td>
+        <td><input type="text" placeholder="SURNAME, Firstname"></td>
+        <td><input type="text" placeholder="e.g. Excavator operator"></td>
+        <td><input type="date"></td>
+        <td style="text-align:center"><input type="checkbox" style="width:18px;height:18px;accent-color:var(--sig-red);cursor:pointer;"></td>
+      </tr>
+      <tr>
+        <td style="padding:8px 10px;font-family:var(--mono);font-size:10px;color:var(--muted2);text-align:center">3</td>
+        <td><input type="text" placeholder="SURNAME, Firstname"></td>
+        <td><input type="text" placeholder="Function"></td>
+        <td><input type="date"></td>
+        <td style="text-align:center"><input type="checkbox" style="width:18px;height:18px;accent-color:var(--sig-red);cursor:pointer;"></td>
+      </tr>
+      <tr>
+        <td style="padding:8px 10px;font-family:var(--mono);font-size:10px;color:var(--muted2);text-align:center">4</td>
+        <td><input type="text" placeholder="SURNAME, Firstname"></td>
+        <td><input type="text" placeholder="Function"></td>
+        <td><input type="date"></td>
+        <td style="text-align:center"><input type="checkbox" style="width:18px;height:18px;accent-color:var(--sig-red);cursor:pointer;"></td>
+      </tr>
+    </tbody>
+  </table>
+  <button class="add-row-btn" onclick="addWorkerRow()">+ Add worker</button>
+
+  <div class="form-grid mt8">
+    <div class="field">
+      <label>Briefing conducted by / Unterweisung durch <span class="req">*</span></label>
+      <input type="text" id="briefingBy" placeholder="Name + Function (e.g. Polier, SiGeKo)">
+    </div>
+    <div class="field">
+      <label>Briefing Date &amp; Time</label>
+      <input type="datetime-local" id="briefingDateTime">
+    </div>
+  </div>
+
+  <div class="info-box warn mt8" style="margin-top:14px;">
+    <strong>If a worker refuses to sign:</strong> "The signature only confirms you received the briefing – not full liability. If you do not sign, I cannot deploy you. I must report this refusal in writing to site management." → Document → Escalate to BL/SiGeKo.
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="goTo(4)">← Back</button>
+    <button class="btn btn-primary" onclick="advance(5)">Proceed to Work Release →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- PANEL 6: FINAL RELEASE (§11) -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="panel" id="panel6">
+  <div class="panel-header">
+    <div class="ph-num sigred">07</div>
+    <div class="ph-text">
+      <h2>Work Release / Freigabe und Unterschriften §11</h2>
+      <p>Two mandatory authorisations. Without both, no work starts.</p>
+    </div>
+    <div class="ph-badge sigeko">SiGeKo + Foreman</div>
+  </div>
+
+  <div class="info-box danger">
+    <strong>⚠ This is the legal heart of the permit.</strong> Two independent signatures are required. Refusal by either party = works do not commence. Validity: 1 week, renewable every Tuesday at the coordination meeting.
+  </div>
+
+  <div class="validity-bar">
+    <div class="vb-item">
+      <span class="vb-label">Permit No.</span>
+      <span class="vb-value" id="vb-permit">ECW-TRM-2026-001</span>
+    </div>
+    <div class="vb-divider"></div>
+    <div class="vb-item">
+      <span class="vb-label">Valid From</span>
+      <span class="vb-value" id="vb-from">—</span>
+    </div>
+    <div class="vb-divider"></div>
+    <div class="vb-item">
+      <span class="vb-label">Valid Until</span>
+      <span class="vb-value green" id="vb-until">—</span>
+    </div>
+    <div class="vb-divider"></div>
+    <div class="vb-item">
+      <span class="vb-label">Renewal</span>
+      <span class="vb-value" style="color:var(--orange)" id="vb-renew">Next Tuesday</span>
+    </div>
+    <div class="vb-divider"></div>
+    <div class="vb-item">
+      <span class="vb-label">Extension</span>
+      <span class="vb-value" style="color:var(--muted2);font-size:11px">Max. 1x per week</span>
+    </div>
+  </div>
+
+  <!-- SiGeKo / BL Signature -->
+  <div class="sig-panel">
+    <div class="sig-panel-title">SiGeKo / Site Management – Work Release / Arbeitsfreigabe</div>
+    <div class="sig-confirm-row">
+      <input type="checkbox" id="sig1check">
+      <div class="sig-confirm-text">
+        I confirm that all prerequisites in §1–§8 have been checked, all control measures are effective and in place, 
+        the SiGe-Plan revision is current, TRM conditions are met, and this permit is hereby <strong>RELEASED FOR WORK</strong> 
+        for the validity period shown above.
+      </div>
+    </div>
+    <div class="sig-name-row">
+      <div class="sig-name-field">
+        <label>Full Name / Voller Name <span style="color:var(--sig-red)">*</span></label>
+        <input type="text" id="sig1name" placeholder="Type full name">
+      </div>
+      <div class="sig-name-field">
+        <label>Function / Funktion</label>
+        <input type="text" id="sig1role" placeholder="e.g. SiGeKo ECW GmbH">
+      </div>
+    </div>
+    <div class="sig-timestamp" id="sig1timestamp">Timestamp: — (auto-captured on submission)</div>
+  </div>
+
+  <!-- Foreman Signature -->
+  <div class="sig-panel">
+    <div class="sig-panel-title">Foreman / Polier – Acceptance of On-Site Responsibility / Übernahme</div>
+    <div class="sig-confirm-row">
+      <input type="checkbox" id="sig2check">
+      <div class="sig-confirm-text">
+        I confirm that all control measures are implemented on site, the location is known to me and my crew, 
+        the TRM Alarm Protocol has been received, and I accept <strong>on-site responsibility</strong> for compliance 
+        with all conditions stated in this permit for the duration of its validity.
+      </div>
+    </div>
+    <div class="sig-name-row">
+      <div class="sig-name-field">
+        <label>Full Name / Voller Name <span style="color:var(--sig-red)">*</span></label>
+        <input type="text" id="sig2name" placeholder="Type full name">
+      </div>
+      <div class="sig-name-field">
+        <label>Company / Firma</label>
+        <input type="text" id="sig2company" placeholder="Executing company">
+      </div>
+    </div>
+    <div class="sig-timestamp" id="sig2timestamp">Timestamp: — (auto-captured on submission)</div>
+  </div>
+
+  <div class="info-box warn">
+    <strong>If foreman refuses to sign:</strong> "Without your signature, I cannot release this permit. Your signature is your legal acceptance of on-site responsibility under DGUV Vorschrift 1 §4 and ArbSchG §12."<br>
+    <strong>If SiGeKo/BL refuses:</strong> "The coordination duty is mandatory under BaustellV §3. I am stopping works and documenting this refusal in writing."
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="goTo(5)">← Back</button>
+    <button class="btn btn-success" onclick="releasePermit()" id="releaseBtn">✓ Release Permit / Permit Freigeben</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- PANEL 7: ACTIVE PERMIT -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="panel" id="panel7">
+  <div class="panel-header">
+    <div class="ph-num green">08</div>
+    <div class="ph-text">
+      <h2>Active Permit / Aktiver Arbeitserlaubnisschein</h2>
+      <p>Permit is released. Display at work location at all times.</p>
+    </div>
+    <div class="ph-badge" style="background:var(--green-dim);color:var(--green);border:1px solid var(--green);">ACTIVE</div>
+  </div>
+
+  <div class="released-banner">
+    <h2>✓ PERMIT RELEASED / FREIGEGEBEN</h2>
+    <p id="releasedPermitNo">ECW-TRM-2026-001 · Valid until next Tuesday renewal</p>
+  </div>
+
+  <div class="validity-bar" style="border-color:var(--green);">
+    <div class="vb-item">
+      <span class="vb-label">Status</span>
+      <span class="vb-value green">● ACTIVE</span>
+    </div>
+    <div class="vb-divider"></div>
+    <div class="vb-item">
+      <span class="vb-label">Released by</span>
+      <span class="vb-value" id="act-released-by" style="font-size:12px;">—</span>
+    </div>
+    <div class="vb-divider"></div>
+    <div class="vb-item">
+      <span class="vb-label">Foreman</span>
+      <span class="vb-value" id="act-foreman" style="font-size:12px;">—</span>
+    </div>
+    <div class="vb-divider"></div>
+    <div class="vb-item">
+      <span class="vb-label">Renewal Due</span>
+      <span class="vb-value" style="color:var(--orange)" id="act-renewal">Tuesday</span>
+    </div>
+  </div>
+
+  <!-- Permit lifecycle timeline -->
+  <div class="sec-title green">Permit Lifecycle / Permit-Lebenszyklus</div>
+  <div class="timeline">
+    <div class="tl-item done">
+      <div class="tl-time">Step 1 · Monday (before 15:00)</div>
+      <div class="tl-title">Contractor submits Tätigkeitsbeschreibung</div>
+      <div class="tl-desc">§1–§4 filled electronically. Submitted to SiGeKo for Tuesday review.</div>
+    </div>
+    <div class="tl-item done">
+      <div class="tl-time">Step 2 · Tuesday – Coordination Meeting</div>
+      <div class="tl-title">SiGeKo reviews, adds conditions (§8)</div>
+      <div class="tl-desc">Checklist verified. Special conditions entered. Adjacent trades coordinated. Permit approved or revision requested.</div>
+    </div>
+    <div class="tl-item done">
+      <div class="tl-time">Step 3 · Before work starts</div>
+      <div class="tl-title">Safety briefing + worker signatures (§9)</div>
+      <div class="tl-desc">Foreman briefs all workers on site. Each worker signs. No signature = no deployment.</div>
+    </div>
+    <div class="tl-item done">
+      <div class="tl-time">Step 4 · Work start</div>
+      <div class="tl-title">Dual release signatures (§11)</div>
+      <div class="tl-desc">SiGeKo/BL and Foreman both sign. Permit becomes active. Displayed at work location.</div>
+    </div>
+    <div class="tl-item active">
+      <div class="tl-time" id="tl-active-label">Week active · NOW</div>
+      <div class="tl-title">Work in progress – Permit valid</div>
+      <div class="tl-desc">Gas measurements at set intervals. Daily site checks. Any material change → new permit required immediately.</div>
+    </div>
+    <div class="tl-item pending">
+      <div class="tl-time">Every Tuesday – Renewal</div>
+      <div class="tl-title">Tuesday meeting: Re-check + renewal or closure</div>
+      <div class="tl-desc">SiGeKo reviews status. Re-check: gas measurement · area clear · personnel unchanged. If work continues: new signatures. If complete: close-out (§12).</div>
+    </div>
+    <div class="tl-item pending">
+      <div class="tl-time">Work completion</div>
+      <div class="tl-title">Close-out signatures (§12) + archiving (§13)</div>
+      <div class="tl-desc">Foreman + SiGeKo sign off. Area confirmed safe. 5-year archiving initiated.</div>
+    </div>
+  </div>
+
+  <!-- Signature status -->
+  <div class="sec-title">Authorisation Status / Freigabestatus</div>
+  <div class="status-card">
+    <div class="status-row">
+      <div>
+        <div class="status-role">SiGeKo / Site Management</div>
+        <div class="status-detail" id="status-sig1">Work Release (§11)</div>
+      </div>
+      <span class="status-badge signed" id="badge-sig1">✓ Signed</span>
+    </div>
+    <div class="status-row">
+      <div>
+        <div class="status-role">Foreman / Polier</div>
+        <div class="status-detail" id="status-sig2">On-site Acceptance (§11)</div>
+      </div>
+      <span class="status-badge signed" id="badge-sig2">✓ Signed</span>
+    </div>
+    <div class="status-row">
+      <div>
+        <div class="status-role">Workers Briefed</div>
+        <div class="status-detail">Safety Briefing Record (§9)</div>
+      </div>
+      <span class="status-badge signed">✓ Completed</span>
+    </div>
+    <div class="status-row">
+      <div>
+        <div class="status-role">Next Renewal</div>
+        <div class="status-detail" id="status-renewal">Tuesday – Coordination Meeting</div>
+      </div>
+      <span class="status-badge pending" id="badge-renewal">Upcoming</span>
+    </div>
+  </div>
+
+  <!-- Close-out section -->
+  <div class="sec-title mt8 red">Close-Out / Abmeldung nach Arbeitsende (§12)</div>
+  <div class="info-box warn">Complete this section when work is fully finished. Both signatures required to formally close the permit. An open permit = a live authorisation.</div>
+  <div class="check-grid" id="closeoutGrid">
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">✅ Works fully completed</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">✅ Area left safe and clean</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">🔥 Fire watch completed</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">📢 Adjacent trades notified</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">♻ Waste disposed / barriers removed</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><span class="check-label">📋 No special incidents</span></div>
+  </div>
+
+  <div class="sig-panel" style="margin-top:14px;">
+    <div class="sig-panel-title">Close-Out Signatures / Abmeldungsunterschriften (§12)</div>
+    <div class="sig-name-row">
+      <div class="sig-name-field">
+        <label>Foreman (sign-off) / Polier (Abmeldung)</label>
+        <input type="text" placeholder="Full name">
+      </div>
+      <div class="sig-name-field">
+        <label>SiGeKo / BL (acceptance) / Abgenommen durch</label>
+        <input type="text" placeholder="Full name">
+      </div>
+    </div>
+    <div class="sig-name-row" style="margin-top:8px;">
+      <div class="sig-name-field">
+        <label>Date / Time</label>
+        <input type="datetime-local">
+      </div>
+      <div class="sig-name-field">
+        <label>Archive Location / Ablageort</label>
+        <input type="text" placeholder="e.g. ECW Container Folder AES-2026 + SharePoint">
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:14px;padding:12px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);">
+    <div style="font-family:var(--mono);font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">Archiving / Archivierung (§13)</div>
+    <div style="font-size:12px;color:var(--muted2);">Retention period: <strong style="color:var(--text)">5 years from close-out date</strong> · Ref: ArbSchG §6 Abs.1</div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="resetAll()">↺ New Permit / Neuer Schein</button>
+    <button class="btn btn-primary" onclick="window.print()">🖨 Print / Drucken</button>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+// ── State ──────────────────────────────────────────────────
+let currentStep = 0;
+let permitCounter = 1;
+
+// ── Init ──────────────────────────────────────────────────
+window.onload = function() {
+  initDates();
+  updateStepperUI();
+};
+
+function initDates() {
+  const now = new Date();
+  // Permit number
+  const pNo = `ECW-TRM-${now.getFullYear()}-${String(permitCounter).padStart(3,'0')}`;
+  document.getElementById('permitNo').value = pNo;
+
+  // Issue date
+  document.getElementById('issueDate').valueAsDate = now;
+
+  // Valid from: next Tuesday 06:00
+  const nextTue = getNextTuesday(now);
+  nextTue.setHours(6,0,0,0);
+  document.getElementById('validFrom').value = toLocalDatetimeInput(nextTue);
+
+  // Valid until: following Monday 22:00
+  const followMon = new Date(nextTue);
+  followMon.setDate(followMon.getDate() + 6);
+  followMon.setHours(22,0,0,0);
+  document.getElementById('validUntil').value = toLocalDatetimeInput(followMon);
+
+  // Topbar week display
+  const weekNo = getWeekNumber(nextTue);
+  document.getElementById('currentWeek').textContent = `KW ${weekNo} / ${nextTue.getFullYear()}`;
+  document.getElementById('renewalDate').textContent = `↻ Renewal: ${formatDate(followMon)} (Tue)`;
+
+  // Validity bar
+  document.getElementById('vb-permit').textContent = pNo;
+  document.getElementById('vb-from').textContent = formatShort(nextTue);
+  document.getElementById('vb-until').textContent = formatShort(followMon);
+
+  const nextRenewal = new Date(followMon);
+  nextRenewal.setDate(nextRenewal.getDate() + 2);
+  document.getElementById('vb-renew').textContent = formatDate(nextRenewal);
+  document.getElementById('act-renewal').textContent = formatDate(nextRenewal);
+  document.getElementById('status-renewal').textContent = `${formatDate(nextRenewal)} – Coordination Meeting`;
+
+  document.getElementById('releasedPermitNo').textContent = `${pNo} · Valid until ${formatShort(followMon)}`;
+}
+
+function getNextTuesday(from) {
+  const d = new Date(from);
+  const day = d.getDay();
+  const daysUntilTue = day <= 2 ? (2 - day) : (9 - day);
+  d.setDate(d.getDate() + daysUntilTue);
+  return d;
+}
+
+function getWeekNumber(d) {
+  const onejan = new Date(d.getFullYear(),0,1);
+  return Math.ceil((((d - onejan) / 86400000) + onejan.getDay() + 1) / 7);
+}
+
+function toLocalDatetimeInput(d) {
+  const pad = n => String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function formatDate(d) {
+  return d.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'});
+}
+
+function formatShort(d) {
+  return d.toLocaleDateString('en-GB', {day:'2-digit', month:'short'}) + ' ' +
+         d.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
+}
+
+// ── Navigation ─────────────────────────────────────────────
+function goTo(n) {
+  document.getElementById('panel' + currentStep).classList.remove('active');
+  document.getElementById('step' + currentStep).classList.remove('active');
+  currentStep = n;
+  document.getElementById('panel' + currentStep).classList.add('active');
+  updateStepperUI();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function advance(from) {
+  document.getElementById('step' + from).classList.remove('active');
+  document.getElementById('step' + from).classList.add('done');
+  goTo(from + 1);
+}
+
+function updateStepperUI() {
+  const btn = document.getElementById('step' + currentStep);
+  btn.classList.add('active');
+  btn.classList.remove('done');
+}
+
+// ── Checkbox toggle ────────────────────────────────────────
+function toggleCheck(el, redClass) {
+  el.classList.toggle('checked');
+  if (redClass) el.classList.toggle(redClass);
+  const box = el.querySelector('.check-box');
+  box.textContent = el.classList.contains('checked') ? '✓' : '';
+}
+
+// ── Add equipment row ──────────────────────────────────────
+function addEqRow() {
+  const tbody = document.getElementById('eqBody');
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input type="text" placeholder="Device"></td>
+    <td><input type="text" placeholder="Type / Manufacturer"></td>
+    <td><input type="date"></td>
+    <td><input type="text" placeholder="Name"></td>
+    <td><input type="text" placeholder="Cert. No."></td>
+  `;
+  tbody.appendChild(tr);
+}
+
+// ── Add worker row ─────────────────────────────────────────
+function addWorkerRow() {
+  const tbody = document.getElementById('workerBody');
+  const rowNum = tbody.rows.length + 1;
+  const tr = document.createElement('tr');
+  const today = new Date().toISOString().split('T')[0];
+  tr.innerHTML = `
+    <td style="padding:8px 10px;font-family:var(--mono);font-size:10px;color:var(--muted2);text-align:center">${rowNum}</td>
+    <td><input type="text" placeholder="SURNAME, Firstname"></td>
+    <td><input type="text" placeholder="Function / Qualification"></td>
+    <td><input type="date" value="${today}"></td>
+    <td style="text-align:center"><input type="checkbox" style="width:18px;height:18px;accent-color:var(--sig-red);cursor:pointer;"></td>
+  `;
+  tbody.appendChild(tr);
+}
+
+// ── Gas evaluation ─────────────────────────────────────────
+function evalGas() {
+  const rows = document.querySelectorAll('#gasTable tbody tr');
+  rows.forEach((row, i) => {
+    const inputs = row.querySelectorAll('input[type="number"]');
+    const o2 = parseFloat(inputs[0].value);
+    const ex = parseFloat(inputs[1].value);
+    const co = parseFloat(inputs[2].value);
+    const h2s = parseFloat(inputs[3].value);
+    const resCell = document.getElementById(`gas${i+1}res`);
+    if (isNaN(o2) && isNaN(ex)) { resCell.innerHTML = `<span class="gas-status" style="background:var(--surface3);color:var(--muted2);border:1px solid var(--border);">—</span>`; return; }
+    const ok = o2 >= 19.5 && o2 <= 23 && ex < 20 && co <= 20 && h2s <= 1;
+    if (ok) {
+      resCell.innerHTML = `<span class="gas-status ok">✓ OK</span>`;
+    } else {
+      resCell.innerHTML = `<span class="gas-status nok">✗ STOP</span>`;
+    }
+  });
+}
+
+// ── Release permit ─────────────────────────────────────────
+function releasePermit() {
+  const c1 = document.getElementById('sig1check').checked;
+  const c2 = document.getElementById('sig2check').checked;
+  const n1 = document.getElementById('sig1name').value.trim();
+  const n2 = document.getElementById('sig2name').value.trim();
+
+  if (!c1 || !c2) {
+    alert('Both confirmation checkboxes must be ticked before releasing the permit.');
+    return;
+  }
+  if (!n1 || !n2) {
+    alert('Both parties must enter their full name to release the permit.');
+    return;
+  }
+
+  const now = new Date();
+  const ts = now.toLocaleString('en-GB', {day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit'});
+  document.getElementById('sig1timestamp').textContent = `✓ Signed: ${n1} · ${ts}`;
+  document.getElementById('sig2timestamp').textContent = `✓ Signed: ${n2} · ${ts}`;
+
+  // Update active permit panel
+  document.getElementById('act-released-by').textContent = n1;
+  document.getElementById('act-foreman').textContent = n2;
+  document.getElementById('status-sig1').textContent = `${n1} · ${ts}`;
+  document.getElementById('status-sig2').textContent = `${n2} · ${ts}`;
+  document.getElementById('tl-active-label').textContent = `Week active · Released ${ts}`;
+
+  advance(6);
+}
+
+// ── Reset ──────────────────────────────────────────────────
+function resetAll() {
+  if (!confirm('Start a new permit? This will clear the current form.')) return;
+  permitCounter++;
+  document.querySelectorAll('.step-btn').forEach(b => { b.classList.remove('active','done'); });
+  document.getElementById('step0').classList.add('active');
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel0').classList.add('active');
+  document.querySelectorAll('.check-item').forEach(c => {
+    c.classList.remove('checked','red-check');
+    const box = c.querySelector('.check-box');
+    if (box) box.textContent = '';
+  });
+  currentStep = 0;
+  initDates();
+}
+</script>
+</body>
+</html>

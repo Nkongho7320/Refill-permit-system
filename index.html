@@ -3,238 +3,82 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ECW GmbH – Work Permit System | Arbeitserlaubnisschein</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<title>ECW GmbH – Work Permit System</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@300;400;500;600&display=swap');
-
-:root {
-  --red: #C8102E; --red-d: rgba(200,16,46,0.12);
-  --yellow: #F5C800; --yellow-d: rgba(245,200,0,0.1);
-  --bg: #080808; --s1: #111; --s2: #181818; --s3: #202020;
-  --b1: #222; --b2: #333; --b3: #444;
-  --text: #E0E0E0; --muted: #666; --muted2: #999;
-  --green: #22C55E; --green-d: rgba(34,197,94,0.1);
-  --orange: #F97316; --orange-d: rgba(249,115,22,0.1);
-  --blue: #3B82F6; --blue-d: rgba(59,130,246,0.1);
-  --sigred: #FF3B3B; --sigred-d: rgba(255,59,59,0.08);
-  --mono: 'IBM Plex Mono', monospace;
-  --sans: 'Barlow', sans-serif;
-  --cond: 'Barlow Condensed', sans-serif;
-  --r: 3px;
-}
+:root{--red:#2B4EFF;--yellow:#F5C800;--bg:#080808;--s1:#111;--s2:#181818;--s3:#202020;--b1:#222;--b2:#333;--text:#E0E0E0;--muted:#666;--muted2:#999;--green:#22C55E;--green-d:rgba(34,197,94,0.1);--orange:#F97316;--blue:#3B82F6;--sigred:#FF3B3B;--sigred-d:rgba(255,59,59,0.08);--mono:'IBM Plex Mono',monospace;--sans:'Barlow',sans-serif;--cond:'Barlow Condensed',sans-serif;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh;}
-::-webkit-scrollbar{width:5px;height:5px;}
-::-webkit-scrollbar-track{background:var(--s1);}
-::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px;}
-
-/* ── SCREENS ── */
 .screen{display:none;min-height:100vh;}
-.screen.active{display:block;}
+.screen.active{display:flex;align-items:center;justify-content:center;}
+#appScreen{display:none;flex-direction:column;}
+#appScreen.active{display:flex;}
 
-/* ── LOGIN ── */
-#loginScreen{
-  display:none;
-  min-height:100vh;
-  background: radial-gradient(ellipse at 20% 50%, rgba(200,16,46,0.15) 0%, transparent 60%),
-              radial-gradient(ellipse at 80% 20%, rgba(245,200,0,0.08) 0%, transparent 50%),
-              var(--bg);
-  align-items:center;justify-content:center;
-}
-#loginScreen.active{display:flex;}
-.login-box{
-  width:100%;max-width:420px;
-  background:var(--s1);
-  border:1px solid var(--b1);
-  border-top:3px solid var(--red);
-  padding:40px;
-  animation: fadeUp 0.4s ease;
-}
+/* LOGIN */
+.login-box{width:100%;max-width:440px;background:var(--s1);border:1px solid var(--b1);border-top:3px solid #2B4EFF;padding:40px;animation:fadeUp 0.4s ease;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
-.login-logo{
-  display:flex;align-items:center;gap:12px;margin-bottom:28px;
-}
-.login-logo-badge{
-  background:var(--red);padding:8px 14px;
-  font-family:var(--cond);font-weight:800;font-size:18px;color:#fff;
-  letter-spacing:0.06em;
-}
+.login-logo{display:flex;align-items:center;gap:12px;margin-bottom:28px;}
+.login-logo-badge{background:var(--red);padding:8px 14px;font-family:var(--cond);font-weight:800;font-size:18px;color:#fff;letter-spacing:0.06em;}
 .login-logo-text{font-family:var(--cond);font-weight:700;font-size:14px;color:var(--muted2);letter-spacing:0.04em;line-height:1.3;}
-.login-title{font-family:var(--cond);font-weight:800;font-size:26px;color:#fff;margin-bottom:6px;letter-spacing:0.02em;}
+.login-title{font-family:var(--cond);font-weight:800;font-size:26px;color:#fff;margin-bottom:4px;letter-spacing:0.02em;}
 .login-sub{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:28px;}
-.login-tabs{display:flex;gap:0;margin-bottom:24px;border:1px solid var(--b2);border-radius:var(--r);overflow:hidden;}
+.login-tabs{display:flex;margin-bottom:24px;border:1px solid var(--b2);border-radius:3px;overflow:hidden;}
 .login-tab{flex:1;padding:9px;background:none;border:none;color:var(--muted2);font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;}
 .login-tab.active{background:var(--red);color:#fff;}
 .field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
 .field label{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted2);}
-.field input,.field select{
-  background:var(--s2);border:1px solid var(--b2);border-radius:var(--r);
-  color:var(--text);font-family:var(--sans);font-size:13px;padding:10px 12px;
-  outline:none;transition:border-color 0.15s;width:100%;
-}
+.field input,.field select{background:var(--s2);border:1px solid var(--b2);border-radius:3px;color:var(--text);font-family:var(--sans);font-size:13px;padding:10px 12px;outline:none;transition:border-color 0.15s;width:100%;}
 .field input:focus,.field select:focus{border-color:var(--yellow);}
 .field select option{background:var(--s2);}
-.btn-full{
-  width:100%;padding:12px;border:none;border-radius:var(--r);
-  background:var(--red);color:#fff;font-family:var(--cond);font-weight:700;
-  font-size:15px;letter-spacing:0.05em;cursor:pointer;transition:all 0.15s;margin-top:8px;
-}
-.btn-full:hover{background:#a50d25;transform:translateY(-1px);}
-.login-msg{font-family:var(--mono);font-size:10px;padding:8px 12px;border-radius:var(--r);margin-top:10px;text-align:center;}
-.login-msg.err{background:var(--sigred-d);color:var(--sigred);border:1px solid var(--sigred);}
-.login-msg.ok{background:var(--green-d);color:var(--green);border:1px solid var(--green);}
-.login-msg.warn{background:var(--orange-d);color:var(--orange);border:1px solid var(--orange);}
+.btn-full{width:100%;padding:12px;border:none;border-radius:3px;background:var(--red);color:#fff;font-family:var(--cond);font-weight:700;font-size:15px;letter-spacing:0.05em;cursor:pointer;transition:all 0.15s;margin-top:8px;}
+.btn-full:hover{background:#1a35cc;}
+.msg{font-family:var(--mono);font-size:10px;padding:8px 12px;border-radius:3px;margin-top:10px;text-align:center;}
+.msg.err{background:rgba(255,59,59,0.1);color:var(--sigred);border:1px solid var(--sigred);}
+.msg.ok{background:var(--green-d);color:var(--green);border:1px solid var(--green);}
+.msg.warn{background:rgba(249,115,22,0.1);color:var(--orange);border:1px solid var(--orange);}
+.ib{background:var(--s2);border:1px solid var(--b1);border-left:3px solid var(--orange);border-radius:3px;padding:10px 13px;font-size:12px;color:var(--muted2);margin-bottom:12px;line-height:1.7;}
 
-/* ── TOPBAR ── */
-.topbar{
-  background:var(--s1);border-bottom:1px solid var(--b1);
-  position:sticky;top:0;z-index:200;
-}
+/* TOPBAR */
+.topbar{background:var(--s1);border-bottom:1px solid var(--b1);position:sticky;top:0;z-index:200;}
 .topbar-inner{display:flex;align-items:stretch;max-width:1300px;margin:0 auto;}
-.tb-logo{background:var(--red);padding:10px 18px;display:flex;flex-direction:column;justify-content:center;border-right:2px solid var(--yellow);min-width:80px;}
+.tb-logo{background:var(--red);padding:10px 18px;display:flex;flex-direction:column;justify-content:center;border-right:2px solid var(--yellow);}
 .tb-logo span:first-child{font-family:var(--cond);font-weight:800;font-size:16px;color:#fff;}
 .tb-logo span:last-child{font-family:var(--mono);font-size:9px;color:rgba(255,255,255,0.6);letter-spacing:0.1em;}
 .tb-title{flex:1;padding:10px 20px;display:flex;flex-direction:column;justify-content:center;}
-.tb-title h1{font-family:var(--cond);font-weight:700;font-size:16px;color:#fff;letter-spacing:0.02em;}
+.tb-title h1{font-family:var(--cond);font-weight:700;font-size:16px;color:#fff;}
 .tb-title p{font-family:var(--mono);font-size:9px;color:var(--muted2);letter-spacing:0.06em;text-transform:uppercase;}
 .tb-user{padding:10px 16px;display:flex;align-items:center;gap:10px;border-left:1px solid var(--b1);}
-.tb-user-info{text-align:right;}
 .tb-user-name{font-size:13px;font-weight:600;color:#fff;}
-.tb-user-role{font-family:var(--mono);font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.06em;}
-.tb-role-badge{padding:3px 8px;border-radius:20px;font-family:var(--mono);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;}
-.tb-role-badge.sigeko{background:var(--sigred-d);color:var(--sigred);border:1px solid var(--sigred);}
-.tb-role-badge.contractor{background:var(--blue-d);color:var(--blue);border:1px solid var(--blue);}
-.tb-role-badge.polier{background:var(--orange-d);color:var(--orange);border:1px solid var(--orange);}
-.tb-role-badge.worker{background:var(--s3);color:var(--muted2);border:1px solid var(--b2);}
-.tb-role-badge.pending{background:var(--yellow-d);color:var(--yellow);border:1px solid var(--yellow);}
-.tb-btn{padding:7px 14px;border-radius:var(--r);border:1px solid var(--b2);background:none;color:var(--muted2);font-family:var(--mono);font-size:10px;cursor:pointer;transition:all 0.15s;}
-.tb-btn:hover{color:var(--text);border-color:var(--b3);}
+.tb-user-role{font-family:var(--mono);font-size:9px;color:var(--muted2);text-transform:uppercase;}
+.role-badge{padding:3px 8px;border-radius:20px;font-family:var(--mono);font-size:9px;font-weight:600;text-transform:uppercase;}
+.role-badge.sigeko{background:rgba(255,59,59,0.1);color:var(--sigred);border:1px solid var(--sigred);}
+.role-badge.contractor{background:rgba(59,130,246,0.1);color:var(--blue);border:1px solid var(--blue);}
+.role-badge.polier{background:rgba(249,115,22,0.1);color:var(--orange);border:1px solid var(--orange);}
+.role-badge.worker{background:var(--s3);color:var(--muted2);border:1px solid var(--b2);}
+.tb-btn{padding:7px 14px;border-radius:3px;border:1px solid var(--b2);background:none;color:var(--muted2);font-family:var(--mono);font-size:10px;cursor:pointer;}
+.tb-btn:hover{color:var(--text);}
 
-/* ── LANG TOGGLE ── */
-.lang-toggle{display:flex;border:1px solid var(--b2);border-radius:var(--r);overflow:hidden;margin-right:10px;}
-.lang-btn{padding:5px 10px;background:none;border:none;color:var(--muted);font-family:var(--mono);font-size:10px;cursor:pointer;transition:all 0.15s;}
-.lang-btn.active{background:var(--yellow);color:var(--bg);}
-
-/* ── NAV TABS ── */
-.nav-tabs{background:var(--s1);border-bottom:1px solid var(--b1);overflow-x:auto;}
-.nav-tabs-inner{display:flex;max-width:1300px;margin:0 auto;}
-.nav-tab{padding:12px 20px;background:none;border:none;border-bottom:3px solid transparent;color:var(--muted2);font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
-.nav-tab:hover{color:var(--text);}
-.nav-tab.active{border-bottom-color:var(--yellow);color:#fff;}
-.nav-tab.sig{border-bottom-color:transparent;}
-.nav-tab.sig.active{border-bottom-color:var(--sigred);color:var(--sigred);}
-
-/* ── MAIN ── */
-.main{max-width:1300px;margin:0 auto;padding:24px 16px 60px;}
+/* MAIN */
+.main{max-width:1300px;margin:0 auto;padding:24px 16px 60px;flex:1;}
 .view{display:none;}
 .view.active{display:block;}
 
-/* ── CARDS ── */
-.card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:20px;margin-bottom:14px;}
-.card-header{display:flex;align-items:center;gap:14px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--b1);}
-.card-num{font-family:var(--cond);font-weight:800;font-size:28px;color:var(--b2);line-height:1;}
-.card-num.red{color:var(--red);}
-.card-num.sigred{color:var(--sigred);}
-.card-num.green{color:var(--green);}
-.card-title{font-family:var(--cond);font-weight:700;font-size:18px;color:#fff;letter-spacing:0.02em;line-height:1.1;}
-.card-sub{font-size:12px;color:var(--muted2);margin-top:3px;}
-.card-badge{margin-left:auto;font-family:var(--mono);font-size:9px;padding:4px 10px;border-radius:var(--r);text-transform:uppercase;letter-spacing:0.08em;white-space:nowrap;align-self:flex-start;}
-.card-badge.contractor{background:var(--blue-d);color:var(--blue);border:1px solid var(--blue);}
-.card-badge.sigeko{background:var(--sigred-d);color:var(--sigred);border:1px solid var(--sigred);}
-.card-badge.all{background:var(--orange-d);color:var(--orange);border:1px solid var(--orange);}
+/* PENDING */
+.pending-screen{min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:16px;}
+.pending-icon{font-size:48px;}
+.pending-title{font-family:var(--cond);font-weight:800;font-size:28px;color:var(--yellow);}
+.pending-sub{font-size:14px;color:var(--muted2);max-width:400px;}
 
-/* ── BILINGUAL FIELDS ── */
-.bi-label{display:grid;grid-template-columns:1fr 1fr;gap:4px;font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:5px;}
-.bi-label .en{color:var(--blue);}
-.bi-label .de{color:var(--yellow);}
-.bi-input{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
-.bi-input input,.bi-input select,.bi-input textarea{
-  background:var(--s2);border:1px solid var(--b2);border-radius:var(--r);
-  color:var(--text);font-family:var(--sans);font-size:12px;padding:8px 10px;
-  outline:none;transition:border-color 0.15s;width:100%;
-}
-.bi-input input:focus,.bi-input select:focus,.bi-input textarea:focus{border-color:var(--yellow);}
-.bi-note{font-family:var(--mono);font-size:8px;color:var(--muted);margin-top:2px;}
-.bi-note .en{color:rgba(59,130,246,0.7);}
-.bi-note .de{color:rgba(245,200,0,0.7);}
-.form-group{margin-bottom:14px;}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-.form-grid.three{grid-template-columns:1fr 1fr 1fr;}
-@media(max-width:680px){.form-grid,.form-grid.three,.bi-input,.bi-label{grid-template-columns:1fr;}}
-
-/* ── SECTION TITLE ── */
+/* DASHBOARD */
+.dash-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:20px;}
+.stat{background:var(--s1);border:1px solid var(--b1);border-radius:3px;padding:16px;text-align:center;}
+.stat-num{font-family:var(--cond);font-weight:800;font-size:32px;color:var(--yellow);}
+.stat-label{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted2);margin-top:4px;}
 .sec{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);padding:14px 0 8px;border-bottom:1px solid var(--b1);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
 .sec::before{content:'';width:3px;height:12px;background:var(--yellow);border-radius:1px;flex-shrink:0;}
-.sec.red::before{background:var(--sigred);}
-.sec.green::before{background:var(--green);}
-.sec.orange::before{background:var(--orange);}
-
-/* ── CHECKBOXES ── */
-.check-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px;margin-bottom:8px;}
-.ci{display:flex;align-items:center;gap:8px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:8px 10px;cursor:pointer;transition:all 0.15s;user-select:none;}
-.ci:hover{border-color:var(--b2);}
-.ci.checked{border-color:var(--yellow);background:var(--yellow-d);}
-.ci.red-check.checked{border-color:var(--sigred);background:var(--sigred-d);}
-.cb{width:15px;height:15px;border:1.5px solid var(--b2);border-radius:2px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;transition:all 0.15s;}
-.ci.checked .cb{background:var(--yellow);border-color:var(--yellow);color:var(--bg);}
-.ci.red-check.checked .cb{background:var(--sigred);border-color:var(--sigred);color:#fff;}
-.cl{font-size:11px;}
-
-/* ── INFO BOXES ── */
-.ib{background:var(--s2);border:1px solid var(--b1);border-left:3px solid var(--blue);border-radius:var(--r);padding:10px 13px;font-size:12px;color:var(--muted2);margin-bottom:12px;line-height:1.7;}
-.ib.warn{border-left-color:var(--orange);}
-.ib.danger{border-left-color:var(--sigred);background:var(--sigred-d);color:#ffcccc;}
-.ib.success{border-left-color:var(--green);background:var(--green-d);color:#bbffcc;}
-.ib strong{color:var(--text);}
-
-/* ── TABLES ── */
-.tbl{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:8px;}
-.tbl th{background:var(--s3);border:1px solid var(--b1);padding:7px 10px;font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted2);text-align:left;}
-.tbl td{border:1px solid var(--b1);padding:3px;}
-.tbl td input{background:transparent;border:none;color:var(--text);font-family:var(--sans);font-size:12px;padding:5px 7px;width:100%;outline:none;}
-.tbl td input:focus{background:var(--s3);}
-.tbl tr:nth-child(even){background:rgba(255,255,255,0.01);}
-.add-row{background:none;border:1px dashed var(--b2);border-radius:var(--r);color:var(--muted);font-family:var(--mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;padding:7px 14px;cursor:pointer;width:100%;transition:all 0.15s;margin-top:4px;}
-.add-row:hover{border-color:var(--yellow);color:var(--yellow);}
-
-/* ── SIGNATURE BLOCKS ── */
-.sig-block{background:var(--sigred-d);border:1px solid var(--sigred);border-radius:var(--r);padding:18px;margin-bottom:12px;}
-.sig-title{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:var(--sigred);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
-.sig-title::before{content:'✎';font-size:14px;}
-.sig-confirm{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;padding:10px 12px;background:rgba(0,0,0,0.3);border-radius:var(--r);border:1px solid rgba(255,59,59,0.2);}
-.sig-confirm input[type="checkbox"]{width:18px;height:18px;flex-shrink:0;accent-color:var(--sigred);cursor:pointer;margin-top:2px;}
-.sig-confirm-text{font-size:12px;color:#ffcccc;line-height:1.6;}
-.sig-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
-.sig-field{display:flex;flex-direction:column;gap:4px;}
-.sig-field label{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.08em;color:var(--sigred);}
-.sig-field input{background:rgba(0,0,0,0.4);border:1px solid rgba(255,59,59,0.4);border-radius:var(--r);color:#fff;font-family:var(--mono);font-size:13px;padding:8px 10px;outline:none;width:100%;transition:border-color 0.15s;}
-.sig-field input:focus{border-color:var(--sigred);}
-.sig-ts{font-family:var(--mono);font-size:10px;color:var(--muted2);margin-top:6px;}
-
-/* ── BUTTONS ── */
-.btn-row{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;}
-.btn{padding:10px 20px;border-radius:var(--r);border:none;cursor:pointer;font-family:var(--mono);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;transition:all 0.15s;display:flex;align-items:center;gap:7px;}
-.btn-primary{background:var(--yellow);color:var(--bg);}
-.btn-primary:hover{background:#ffd700;transform:translateY(-1px);}
-.btn-secondary{background:var(--s3);color:var(--muted2);border:1px solid var(--b2);}
-.btn-secondary:hover{color:var(--text);border-color:var(--b3);}
-.btn-danger{background:var(--sigred-d);color:var(--sigred);border:1px solid var(--sigred);}
-.btn-danger:hover{background:rgba(255,59,59,0.2);}
-.btn-success{background:var(--green-d);color:var(--green);border:1px solid var(--green);}
-.btn-success:hover{background:rgba(34,197,94,0.2);}
-.btn-pdf{background:linear-gradient(135deg,var(--red),#a00020);color:#fff;}
-.btn-pdf:hover{transform:translateY(-1px);box-shadow:0 4px 15px rgba(200,16,46,0.4);}
-.btn:disabled{opacity:0.35;cursor:not-allowed;transform:none!important;}
-
-/* ── PERMIT LIST ── */
 .permit-list{display:flex;flex-direction:column;gap:8px;}
-.permit-item{
-  background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);
-  padding:14px 18px;display:flex;align-items:center;gap:14px;
-  cursor:pointer;transition:all 0.15s;
-}
+.permit-item{background:var(--s1);border:1px solid var(--b1);border-radius:3px;padding:14px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all 0.15s;}
 .permit-item:hover{border-color:var(--b2);background:var(--s2);}
 .pi-num{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--yellow);min-width:140px;}
 .pi-info{flex:1;}
@@ -242,86 +86,90 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .pi-detail{font-size:11px;color:var(--muted2);font-family:var(--mono);}
 .pi-status{font-family:var(--mono);font-size:9px;padding:4px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:0.06em;white-space:nowrap;}
 .pi-status.draft{background:var(--s3);color:var(--muted2);border:1px solid var(--b2);}
-.pi-status.submitted{background:var(--blue-d);color:var(--blue);border:1px solid var(--blue);}
-.pi-status.reviewing{background:var(--orange-d);color:var(--orange);border:1px solid var(--orange);}
-.pi-status.approved{background:var(--yellow-d);color:var(--yellow);border:1px solid var(--yellow);}
+.pi-status.submitted{background:rgba(59,130,246,0.1);color:var(--blue);border:1px solid var(--blue);}
 .pi-status.active{background:var(--green-d);color:var(--green);border:1px solid var(--green);}
-.pi-status.closed{background:var(--s3);color:var(--muted);border:1px solid var(--b1);}
-.pi-status.pending_approval{background:var(--orange-d);color:var(--orange);border:1px solid var(--orange);}
 
-/* ── STEPPER ── */
-.stepper{display:flex;overflow-x:auto;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);margin-bottom:20px;}
-.step-btn{flex:1;min-width:90px;padding:10px 6px;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;text-align:center;transition:all 0.2s;position:relative;}
-.step-btn:not(:last-child)::after{content:'';position:absolute;right:0;top:50%;transform:translateY(-50%);height:20px;width:1px;background:var(--b1);}
-.step-btn .sn{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:0.1em;display:block;margin-bottom:2px;}
-.step-btn .sl{font-family:var(--cond);font-size:10px;font-weight:600;color:var(--muted2);letter-spacing:0.03em;text-transform:uppercase;display:block;}
-.step-btn.active{border-bottom-color:var(--yellow);}
-.step-btn.active .sn{color:var(--yellow);}
-.step-btn.active .sl{color:#fff;}
-.step-btn.done{border-bottom-color:var(--green);}
-.step-btn.done .sn{color:var(--green);}
-.step-btn.done .sl{color:var(--green);}
-.step-btn.sig-step.active{border-bottom-color:var(--sigred);}
-.step-btn.sig-step.active .sn,.step-btn.sig-step.active .sl{color:var(--sigred);}
-
-/* ── ADMIN PANEL ── */
-.user-card{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:14px 18px;display:flex;align-items:center;gap:14px;margin-bottom:8px;}
+/* ADMIN */
+.user-card{background:var(--s2);border:1px solid var(--b1);border-radius:3px;padding:14px 18px;display:flex;align-items:center;gap:14px;margin-bottom:8px;}
 .uc-avatar{width:38px;height:38px;border-radius:50%;background:var(--b2);display:flex;align-items:center;justify-content:center;font-family:var(--cond);font-weight:700;font-size:14px;color:#fff;flex-shrink:0;}
 .uc-info{flex:1;}
 .uc-name{font-weight:600;font-size:13px;}
 .uc-detail{font-size:11px;color:var(--muted2);font-family:var(--mono);}
 .uc-actions{display:flex;gap:8px;}
-.uc-btn{padding:5px 12px;border-radius:var(--r);border:none;font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.15s;}
+.uc-btn{padding:5px 12px;border-radius:3px;border:none;font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all 0.15s;}
 .uc-btn.approve{background:var(--green-d);color:var(--green);border:1px solid var(--green);}
-.uc-btn.approve:hover{background:rgba(34,197,94,0.2);}
-.uc-btn.reject{background:var(--sigred-d);color:var(--sigred);border:1px solid var(--sigred);}
-.uc-btn.reject:hover{background:rgba(255,59,59,0.2);}
-.uc-btn.change{background:var(--s3);color:var(--muted2);border:1px solid var(--b2);}
-.uc-btn.change:hover{color:var(--text);}
+.uc-btn.reject{background:rgba(255,59,59,0.1);color:var(--sigred);border:1px solid var(--sigred);}
 
-/* ── VALIDITY BAR ── */
-.vbar{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:12px 18px;display:flex;align-items:center;gap:16px;margin-bottom:14px;flex-wrap:wrap;}
+/* NAV */
+.nav-tabs{background:var(--s1);border-bottom:1px solid var(--b1);overflow-x:auto;}
+.nav-tabs-inner{display:flex;max-width:1300px;margin:0 auto;}
+.nav-tab{padding:12px 20px;background:none;border:none;border-bottom:3px solid transparent;color:var(--muted2);font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
+.nav-tab:hover{color:var(--text);}
+.nav-tab.active{border-bottom-color:var(--yellow);color:#fff;}
+
+/* BUTTONS */
+.btn-row{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;}
+.btn{padding:10px 20px;border-radius:3px;border:none;cursor:pointer;font-family:var(--mono);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;transition:all 0.15s;}
+.btn-primary{background:var(--yellow);color:var(--bg);}
+.btn-primary:hover{background:#ffd700;}
+.btn-secondary{background:var(--s3);color:var(--muted2);border:1px solid var(--b2);}
+.btn-success{background:var(--green-d);color:var(--green);border:1px solid var(--green);}
+
+/* LOADER */
+.loader{position:fixed;inset:0;background:rgba(8,8,8,0.9);display:none;align-items:center;justify-content:center;z-index:999;}
+.loader.active{display:flex;}
+.loader-spin{width:36px;height:36px;border:3px solid var(--b2);border-top-color:#2B4EFF;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loader-text{font-family:var(--mono);font-size:11px;color:var(--muted2);text-align:center;}
+
+/* PERMIT FORM */
+.card{background:var(--s1);border:1px solid var(--b1);border-radius:3px;padding:20px;margin-bottom:14px;}
+.card-title{font-family:var(--cond);font-weight:700;font-size:18px;color:#fff;margin-bottom:4px;}
+.card-sub{font-size:12px;color:var(--muted2);margin-bottom:16px;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:640px){.form-grid{grid-template-columns:1fr;}}
+.stepper{display:flex;overflow-x:auto;background:var(--s2);border:1px solid var(--b1);border-radius:3px;margin-bottom:20px;}
+.step-btn{flex:1;min-width:80px;padding:10px 6px;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;text-align:center;transition:all 0.2s;}
+.step-btn .sn{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:0.1em;display:block;margin-bottom:2px;}
+.step-btn .sl{font-family:var(--cond);font-size:10px;font-weight:600;color:var(--muted2);text-transform:uppercase;display:block;}
+.step-btn.active{border-bottom-color:var(--yellow);}
+.step-btn.active .sn{color:var(--yellow);}
+.step-btn.active .sl{color:#fff;}
+.step-btn.done{border-bottom-color:var(--green);}
+.step-btn.done .sl{color:var(--green);}
+.check-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px;margin-bottom:8px;}
+.ci{display:flex;align-items:center;gap:8px;background:var(--s2);border:1px solid var(--b1);border-radius:3px;padding:8px 10px;cursor:pointer;transition:all 0.15s;user-select:none;}
+.ci.checked{border-color:var(--yellow);background:rgba(245,200,0,0.1);}
+.cb{width:15px;height:15px;border:1.5px solid var(--b2);border-radius:2px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;}
+.ci.checked .cb{background:var(--yellow);border-color:var(--yellow);color:var(--bg);}
+.cl{font-size:11px;}
+.tbl{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:8px;}
+.tbl th{background:var(--s3);border:1px solid var(--b1);padding:7px 10px;font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted2);text-align:left;}
+.tbl td{border:1px solid var(--b1);padding:3px;}
+.tbl td input{background:transparent;border:none;color:var(--text);font-family:var(--sans);font-size:12px;padding:5px 7px;width:100%;outline:none;}
+.add-row{background:none;border:1px dashed var(--b2);border-radius:3px;color:var(--muted);font-family:var(--mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;padding:7px 14px;cursor:pointer;width:100%;transition:all 0.15s;margin-top:4px;}
+.add-row:hover{border-color:var(--yellow);color:var(--yellow);}
+.sig-block{background:rgba(255,59,59,0.08);border:1px solid var(--sigred);border-radius:3px;padding:18px;margin-bottom:12px;}
+.sig-title{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:var(--sigred);margin-bottom:14px;}
+.sig-confirm{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;padding:10px 12px;background:rgba(0,0,0,0.3);border-radius:3px;}
+.sig-confirm input[type="checkbox"]{width:18px;height:18px;flex-shrink:0;accent-color:var(--sigred);cursor:pointer;margin-top:2px;}
+.sig-confirm-text{font-size:12px;color:#ffcccc;line-height:1.6;}
+.sig-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+.sig-field{display:flex;flex-direction:column;gap:4px;}
+.sig-field label{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.08em;color:var(--sigred);}
+.sig-field input{background:rgba(0,0,0,0.4);border:1px solid rgba(255,59,59,0.4);border-radius:3px;color:#fff;font-family:var(--mono);font-size:13px;padding:8px 10px;outline:none;width:100%;}
+.vbar{background:var(--s2);border:1px solid var(--b1);border-radius:3px;padding:12px 18px;display:flex;align-items:center;gap:16px;margin-bottom:14px;flex-wrap:wrap;}
 .vi{display:flex;flex-direction:column;gap:2px;}
 .vi-label{font-family:var(--mono);font-size:8px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);}
 .vi-value{font-family:var(--mono);font-size:13px;color:var(--yellow);font-weight:600;}
-.vi-value.green{color:var(--green);}
 .vi-div{width:1px;height:28px;background:var(--b1);}
-
-/* ── GAS TABLE STATUS ── */
-.gas-ok{background:var(--green-d);color:var(--green);border:1px solid var(--green);padding:3px 8px;border-radius:20px;font-family:var(--mono);font-size:9px;}
-.gas-nok{background:var(--sigred-d);color:var(--sigred);border:1px solid var(--sigred);padding:3px 8px;border-radius:20px;font-family:var(--mono);font-size:9px;}
-
-/* ── RELEASED BANNER ── */
-.released-banner{background:linear-gradient(135deg,#001a08,#002210);border:2px solid var(--green);border-radius:var(--r);padding:24px;text-align:center;margin-bottom:20px;}
+.released-banner{background:linear-gradient(135deg,#001a08,#002210);border:2px solid var(--green);border-radius:3px;padding:24px;text-align:center;margin-bottom:20px;}
 .released-banner h2{font-family:var(--cond);font-size:26px;font-weight:800;color:var(--green);letter-spacing:0.04em;}
-.released-banner p{font-size:11px;color:rgba(34,197,94,0.7);font-family:var(--mono);margin-top:4px;}
-
-/* ── PENDING SCREEN ── */
-.pending-screen{min-height:80vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:16px;}
-.pending-icon{font-size:48px;}
-.pending-title{font-family:var(--cond);font-weight:800;font-size:28px;color:var(--yellow);}
-.pending-sub{font-size:14px;color:var(--muted2);max-width:400px;}
-
-/* ── DASH STATS ── */
-.dash-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:20px;}
-.stat{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:16px;text-align:center;}
-.stat-num{font-family:var(--cond);font-weight:800;font-size:32px;color:var(--yellow);}
-.stat-label{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted2);margin-top:4px;}
-
-/* ── LOADER ── */
-.loader{position:fixed;inset:0;background:rgba(8,8,8,0.9);display:flex;align-items:center;justify-content:center;z-index:999;display:none;}
-.loader.active{display:flex;}
-.loader-inner{text-align:center;}
-.loader-spin{width:36px;height:36px;border:3px solid var(--b2);border-top-color:var(--red);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px;}
-@keyframes spin{to{transform:rotate(360deg);}}
-.loader-text{font-family:var(--mono);font-size:11px;color:var(--muted2);letter-spacing:0.08em;}
-
-.mt{margin-top:14px;}.mb{margin-bottom:14px;}
+.btn-pdf{background:linear-gradient(135deg,var(--red),#1a35cc);color:#fff;}
 </style>
 </head>
 <body>
 
-<!-- LOADER -->
 <div class="loader" id="loader">
   <div class="loader-inner">
     <div class="loader-spin"></div>
@@ -329,9 +177,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════ -->
-<!-- LOGIN SCREEN -->
-<!-- ══════════════════════════════════════════════════════════ -->
+<!-- LOGIN -->
 <div id="loginScreen" class="screen">
   <div class="login-box">
     <div class="login-logo">
@@ -340,48 +186,25 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
     </div>
     <div class="login-title">Work Permit System</div>
     <div class="login-sub">Arbeitserlaubnisschein · IAW/TRM Leuna-Leipzig</div>
-
     <div class="login-tabs">
-      <button class="login-tab active" onclick="switchLoginTab('login')">Sign In / Anmelden</button>
-      <button class="login-tab" onclick="switchLoginTab('register')">Register / Registrieren</button>
+      <button class="login-tab active" onclick="switchTab('login')">Sign In / Anmelden</button>
+      <button class="login-tab" onclick="switchTab('register')">Register / Registrieren</button>
     </div>
-
-    <!-- LOGIN FORM -->
     <div id="loginForm">
-      <div class="field">
-        <label>Email</label>
-        <input type="email" id="loginEmail" placeholder="your@email.com">
-      </div>
-      <div class="field">
-        <label>Password / Passwort</label>
-        <input type="password" id="loginPass" placeholder="••••••••">
-      </div>
+      <div class="field"><label>Email</label><input type="email" id="loginEmail" placeholder="your@email.com"></div>
+      <div class="field"><label>Password / Passwort</label><input type="password" id="loginPass" placeholder="••••••••"></div>
       <button class="btn-full" onclick="doLogin()">Sign In / Anmelden →</button>
       <div id="loginMsg"></div>
     </div>
-
-    <!-- REGISTER FORM -->
     <div id="registerForm" style="display:none;">
-      <div class="ib warn" style="margin-bottom:14px;">
-        <strong>EN:</strong> Registration requires SiGeKo approval before you can access the system.<br>
-        <strong>DE:</strong> Die Registrierung benötigt SiGeKo-Genehmigung vor dem Zugang.
+      <div class="ib">
+        <strong>EN:</strong> Registration requires SiGeKo approval.<br>
+        <strong>DE:</strong> Registrierung benötigt SiGeKo-Genehmigung.
       </div>
-      <div class="field">
-        <label>Full Name / Vollständiger Name</label>
-        <input type="text" id="regName" placeholder="Surname, Firstname">
-      </div>
-      <div class="field">
-        <label>Email</label>
-        <input type="email" id="regEmail" placeholder="your@email.com">
-      </div>
-      <div class="field">
-        <label>Password / Passwort (min. 8 chars)</label>
-        <input type="password" id="regPass" placeholder="••••••••">
-      </div>
-      <div class="field">
-        <label>Company / Firma</label>
-        <input type="text" id="regCompany" placeholder="Your company name">
-      </div>
+      <div class="field"><label>Full Name / Vollständiger Name</label><input type="text" id="regName" placeholder="Surname, Firstname"></div>
+      <div class="field"><label>Email</label><input type="email" id="regEmail" placeholder="your@email.com"></div>
+      <div class="field"><label>Password / Passwort (min. 8 chars)</label><input type="password" id="regPass" placeholder="••••••••"></div>
+      <div class="field"><label>Company / Firma</label><input type="text" id="regCompany" placeholder="Company name"></div>
       <div class="field">
         <label>Role / Rolle requested</label>
         <select id="regRole">
@@ -396,364 +219,252 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════ -->
-<!-- MAIN APP -->
-<!-- ══════════════════════════════════════════════════════════ -->
+<!-- APP -->
 <div id="appScreen" class="screen">
-
-  <!-- TOPBAR -->
   <div class="topbar">
     <div class="topbar-inner">
       <div class="tb-logo"><span>ECW</span><span>PERMIT</span></div>
       <div class="tb-title">
-        <h1 id="tb-h1">Work Permit System / Arbeitserlaubnisschein</h1>
-        <p>IAW / TRM Leuna-Leipzig · Fernwärmetrasse · <span id="tb-week"></span></p>
+        <h1>Work Permit System / Arbeitserlaubnisschein</h1>
+        <p>IAW / TRM Leuna-Leipzig · Fernwärmetrasse · Renewal every Tuesday</p>
       </div>
       <div class="tb-user">
-        <div class="lang-toggle">
-          <button class="lang-btn active" onclick="setLang('en')">EN</button>
-          <button class="lang-btn" onclick="setLang('de')">DE</button>
+        <div>
+          <div class="tb-user-name" id="tb-name">—</div>
+          <div class="tb-user-role" id="tb-company">—</div>
         </div>
-        <div class="tb-user-info">
-          <div class="tb-user-name" id="tb-username">—</div>
-          <div class="tb-user-role" id="tb-userrole">—</div>
-        </div>
-        <div class="tb-role-badge" id="tb-rolebadge">—</div>
+        <div class="role-badge" id="tb-role">—</div>
         <button class="tb-btn" onclick="doLogout()">Logout</button>
       </div>
     </div>
   </div>
-
-  <!-- NAV TABS -->
-  <div class="nav-tabs">
-    <div class="nav-tabs-inner" id="navTabs"></div>
-  </div>
-
-  <!-- MAIN CONTENT -->
+  <div class="nav-tabs"><div class="nav-tabs-inner" id="navTabs"></div></div>
   <div class="main">
-
-    <!-- PENDING APPROVAL VIEW -->
+    <!-- PENDING -->
     <div class="view active" id="view-pending">
       <div class="pending-screen">
         <div class="pending-icon">⏳</div>
-        <div class="pending-title" id="pend-title">Account Pending Approval</div>
-        <div class="pending-sub" id="pend-sub">Your registration is awaiting SiGeKo approval. You will receive access once approved. Please check back later.</div>
-        <button class="btn btn-secondary" onclick="doLogout()">Logout</button>
+        <div class="pending-title">Account Pending Approval</div>
+        <div class="pending-sub">Your registration is awaiting SiGeKo approval. Please check back later. / Ihre Registrierung wartet auf SiGeKo-Genehmigung.</div>
+        <button class="btn btn-secondary" onclick="doLogout()" style="padding:10px 20px;background:var(--s3);color:var(--muted2);border:1px solid var(--b2);border-radius:3px;cursor:pointer;font-family:var(--mono);font-size:10px;">Logout</button>
       </div>
     </div>
-
     <!-- DASHBOARD -->
     <div class="view" id="view-dashboard">
       <div class="dash-stats" id="dashStats"></div>
       <div class="sec">Recent Permits / Aktuelle Scheine</div>
-      <div class="permit-list" id="dashPermitList">
-        <div style="text-align:center;padding:30px;color:var(--muted);font-family:var(--mono);font-size:11px;">Loading permits…</div>
-      </div>
-      <div class="btn-row mt">
-        <button class="btn btn-primary" id="newPermitBtn" onclick="startNewPermit()" style="display:none;">+ New Permit / Neuer Schein</button>
-      </div>
+      <div class="permit-list" id="permitList"><div style="text-align:center;padding:30px;color:var(--muted);font-family:var(--mono);font-size:11px;">Loading…</div></div>
+      <div class="btn-row"><button class="btn btn-primary" id="newPermitBtn" onclick="showNewPermit()" style="display:none;">+ New Permit / Neuer Schein</button></div>
     </div>
-
-    <!-- ADMIN: USER MANAGEMENT -->
+    <!-- ADMIN -->
     <div class="view" id="view-admin">
-      <div class="sec red">Pending Registrations / Ausstehende Registrierungen</div>
-      <div id="pendingUsers">
-        <div style="text-align:center;padding:20px;color:var(--muted);font-family:var(--mono);font-size:11px;">Loading…</div>
-      </div>
+      <div class="sec" style="--before-bg:var(--sigred)">Pending Registrations / Ausstehende Registrierungen</div>
+      <div id="pendingUsers"><div style="text-align:center;padding:20px;color:var(--muted);font-family:var(--mono);font-size:11px;">Loading…</div></div>
       <div class="sec" style="margin-top:20px;">All Users / Alle Benutzer</div>
-      <div id="allUsers">
-        <div style="text-align:center;padding:20px;color:var(--muted);font-family:var(--mono);font-size:11px;">Loading…</div>
-      </div>
+      <div id="allUsers"><div style="text-align:center;padding:20px;color:var(--muted);font-family:var(--mono);font-size:11px;">Loading…</div></div>
     </div>
-
-    <!-- PERMIT FORM (multi-step) -->
+    <!-- PERMIT FORM -->
     <div class="view" id="view-permit">
       <div class="stepper" id="permitStepper"></div>
       <div id="permitSteps"></div>
     </div>
-
-    <!-- PERMIT VIEW (read-only / SiGeKo review) -->
-    <div class="view" id="view-permit-detail">
-      <div id="permitDetailContent"></div>
-    </div>
-
   </div>
 </div>
 
 <script>
-// ══════════════════════════════════════════════════════════════
-// CONFIGURATION – Replace with your Supabase credentials
-// ══════════════════════════════════════════════════════════════
+// ── CONFIGURATION ──────────────────────────────────────────────
 const SUPABASE_URL = 'https://tshxopvyvhrsegsmpcj.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRzaHhvcHZ5dmhyc2Vnc21wcGNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4NjQ3MzcsImV4cCI6MjA5NTQ0MDczN30.e0xW-4c2UJhvmf122NFogI7Nh7u3Q_v9LEIXPgJDGZw';
-// ── State ──────────────────────────────────────────────────────
-let sb, currentUser, currentProfile, currentLang = 'en';
-let currentPermit = null, editingPermitId = null;
-let permitStep = 0;
-let permitData = {};
 
-// ── i18n ───────────────────────────────────────────────────────
-const T = {
-  en: {
-    dashboard: 'Dashboard', admin: 'User Management', newPermit: 'New Permit',
-    permits: 'All Permits', pending: 'Account Pending Approval',
-    pendingSub: 'Your registration is awaiting SiGeKo approval. Please check back later.',
-    week: 'Permit Week', renewal: 'Renewal every Tuesday',
-    sigeko: 'SiGeKo / Safety Coordinator', contractor: 'Contractor / Subcontractor',
-    polier: 'Foreman / Polier', worker: 'Worker / Arbeiter',
-  },
-  de: {
-    dashboard: 'Übersicht', admin: 'Benutzerverwaltung', newPermit: 'Neuer Schein',
-    permits: 'Alle Scheine', pending: 'Konto wartet auf Genehmigung',
-    pendingSub: 'Ihre Registrierung wartet auf SiGeKo-Genehmigung. Bitte später wiederkommen.',
-    week: 'Scheinwoche', renewal: 'Erneuerung jeden Dienstag',
-    sigeko: 'SiGeKo / Sicherheitskoordinator', contractor: 'Auftragnehmer / Subunternehmer',
-    polier: 'Polier / Vorarbeiter', worker: 'Arbeiter',
-  }
-};
+// ── State ───────────────────────────────────────────────────────
+let sb, currentUser, currentProfile, permitData = {}, permitStep = 0;
 
-function t(key){ return (T[currentLang][key] || T['en'][key] || key); }
-function setLang(l){
-  currentLang = l;
-  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active', b.textContent===l.toUpperCase()));
-  refreshUI();
-}
-
-// ── Init ───────────────────────────────────────────────────────
-window.onload = async function(){
+// ── Init ────────────────────────────────────────────────────────
+window.onload = async function() {
   showLoader(true);
   try {
-    sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const {data:{session}} = await sb.auth.getSession();
-    if(session){ await loadProfile(session.user); }
-    else { showLogin(); }
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      await loadProfile(session.user);
+    } else {
+      showLogin();
+    }
   } catch(e) {
-    // If Supabase not configured, show demo mode
-    showDemoMode();
+    console.error('Init error:', e);
+    showMsg('loginMsg', 'Connection error: ' + e.message, 'err');
+    showLogin();
   }
-  initWeekDisplay();
   showLoader(false);
 };
 
-function showDemoMode(){
-  // Allow app to run without Supabase for demo/testing
-  currentProfile = {role:'sigeko', full_name:'Demo SiGeKo', company:'ECW GmbH', status:'approved'};
-  showApp();
+// ── Auth ─────────────────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.login-tab').forEach((b,i) => b.classList.toggle('active', i === (tab==='login'?0:1)));
+  document.getElementById('loginForm').style.display = tab==='login' ? 'block' : 'none';
+  document.getElementById('registerForm').style.display = tab==='register' ? 'block' : 'none';
 }
 
-// ── Auth ───────────────────────────────────────────────────────
-function switchLoginTab(tab){
-  document.querySelectorAll('.login-tab').forEach((b,i)=>b.classList.toggle('active',i===(tab==='login'?0:1)));
-  document.getElementById('loginForm').style.display = tab==='login'?'block':'none';
-  document.getElementById('registerForm').style.display = tab==='register'?'block':'none';
-}
-
-async function doLogin(){
+async function doLogin() {
   const email = document.getElementById('loginEmail').value.trim();
   const pass = document.getElementById('loginPass').value;
-  if(!email||!pass){ showMsg('loginMsg','Please fill all fields / Alle Felder ausfüllen','err'); return; }
+  if (!email || !pass) { showMsg('loginMsg','Please fill all fields','err'); return; }
   showLoader(true);
   try {
-    const {data,error} = await sb.auth.signInWithPassword({email,password:pass});
-    if(error) throw error;
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+    if (error) throw error;
     await loadProfile(data.user);
-  } catch(e){ showMsg('loginMsg', e.message||'Login failed','err'); }
+  } catch(e) {
+    showMsg('loginMsg', e.message || 'Login failed', 'err');
+  }
   showLoader(false);
 }
 
-async function doRegister(){
+async function doRegister() {
   const name = document.getElementById('regName').value.trim();
   const email = document.getElementById('regEmail').value.trim();
   const pass = document.getElementById('regPass').value;
   const company = document.getElementById('regCompany').value.trim();
   const role = document.getElementById('regRole').value;
-  if(!name||!email||!pass||!company){ showMsg('regMsg','Please fill all fields','err'); return; }
-  if(pass.length<8){ showMsg('regMsg','Password must be at least 8 characters','err'); return; }
+  if (!name||!email||!pass||!company) { showMsg('regMsg','Please fill all fields','err'); return; }
+  if (pass.length < 8) { showMsg('regMsg','Password must be at least 8 characters','err'); return; }
   showLoader(true);
   try {
-    const {data,error} = await sb.auth.signUp({email,password:pass,options:{data:{full_name:name}}});
-    if(error) throw error;
-    // Insert profile as pending
-    await sb.from('profiles').insert({id:data.user.id,full_name:name,email,company,role,status:'pending'});
-    showMsg('regMsg','Registration submitted! Awaiting SiGeKo approval. / Registrierung eingereicht! Warte auf SiGeKo-Genehmigung.','ok');
-  } catch(e){ showMsg('regMsg', e.message||'Registration failed','err'); }
+    const { data, error } = await sb.auth.signUp({ email, password: pass, options: { data: { full_name: name } } });
+    if (error) throw error;
+    if (data.user) {
+      const { error: profileError } = await sb.from('profiles').insert({
+        id: data.user.id, full_name: name, email, company, role, status: 'pending'
+      });
+      if (profileError) throw profileError;
+    }
+    showMsg('regMsg', '✓ Registration submitted! Awaiting SiGeKo approval. / Registrierung eingereicht! Warte auf Genehmigung.', 'ok');
+  } catch(e) {
+    showMsg('regMsg', e.message || 'Registration failed', 'err');
+  }
   showLoader(false);
 }
 
-async function loadProfile(user){
+async function loadProfile(user) {
   currentUser = user;
-  const {data} = await sb.from('profiles').select('*').eq('id',user.id).single();
-  if(data){ currentProfile = data; showApp(); }
-  else {
-    // Profile not yet created (edge case)
-    showMsg('loginMsg','Profile not found. Please register first.','err');
+  const { data, error } = await sb.from('profiles').select('*').eq('id', user.id).single();
+  if (data) {
+    currentProfile = data;
+    showApp();
+  } else {
+    showMsg('loginMsg', 'Profile not found. Please register first.', 'err');
     showLogin();
   }
 }
 
-async function doLogout(){
-  if(sb) await sb.auth.signOut();
+async function doLogout() {
+  await sb.auth.signOut();
   currentUser = null; currentProfile = null;
   showLogin();
 }
 
-// ── Show screens ───────────────────────────────────────────────
-function showLogin(){
+// ── Screens ───────────────────────────────────────────────────────
+function showLogin() {
   document.getElementById('loginScreen').classList.add('active');
   document.getElementById('appScreen').classList.remove('active');
 }
 
-function showApp(){
+function showApp() {
   document.getElementById('loginScreen').classList.remove('active');
   document.getElementById('appScreen').classList.add('active');
-  if(currentProfile.status === 'pending'){
-    buildNav(['pending']);
+  // Update topbar
+  document.getElementById('tb-name').textContent = currentProfile.full_name;
+  document.getElementById('tb-company').textContent = currentProfile.company || '';
+  const badge = document.getElementById('tb-role');
+  badge.textContent = currentProfile.role;
+  badge.className = 'role-badge ' + currentProfile.role;
+  if (currentProfile.status === 'pending') {
+    buildNav([]);
     showView('pending');
-    document.getElementById('pend-title').textContent = t('pending');
-    document.getElementById('pend-sub').textContent = t('pendingSub');
     return;
   }
   buildNav();
-  updateTopbar();
   showView('dashboard');
   loadDashboard();
 }
 
-function updateTopbar(){
-  document.getElementById('tb-username').textContent = currentProfile.full_name;
-  document.getElementById('tb-userrole').textContent = currentProfile.company||'';
-  const badge = document.getElementById('tb-rolebadge');
-  badge.textContent = currentProfile.role;
-  badge.className = `tb-role-badge ${currentProfile.role}`;
-}
-
-function buildNav(views){
+function buildNav() {
+  const role = currentProfile?.role;
   const tabs = document.getElementById('navTabs');
   tabs.innerHTML = '';
-  const role = currentProfile?.role;
-  const navItems = [
-    {id:'dashboard', label:'Dashboard', roles:['sigeko','contractor','polier','worker']},
-    {id:'admin', label: t('admin'), roles:['sigeko'], cls:''},
-    {id:'permits', label:'All Permits / Alle Scheine', roles:['sigeko']},
+  const items = [
+    { id: 'dashboard', label: 'Dashboard' },
+    { id: 'admin', label: 'User Management', roles: ['sigeko'] },
   ];
-  navItems.forEach(item=>{
-    if(!item.roles.includes(role)) return;
+  items.forEach(item => {
+    if (item.roles && !item.roles.includes(role)) return;
     const btn = document.createElement('button');
-    btn.className = `nav-tab ${item.cls||''}`;
+    btn.className = 'nav-tab';
     btn.textContent = item.label;
-    btn.onclick = ()=>{
-      document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
+    btn.onclick = () => {
+      document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      if(item.id==='admin') loadAdminPanel();
-      if(item.id==='permits') loadAllPermits();
-      if(item.id==='dashboard'){loadDashboard();}
-      showView(item.id);
+      if (item.id === 'admin') { loadAdminPanel(); showView('admin'); }
+      if (item.id === 'dashboard') { loadDashboard(); showView('dashboard'); }
     };
     tabs.appendChild(btn);
   });
-  if(tabs.children.length) tabs.children[0].classList.add('active');
-}
-
-function showView(id){
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  const el = document.getElementById('view-'+id);
-  if(el) el.classList.add('active');
-}
-
-// ── Dashboard ──────────────────────────────────────────────────
-async function loadDashboard(){
-  const role = currentProfile.role;
-  // Show New Permit button for contractors and sigeko
+  if (tabs.children.length) tabs.children[0].classList.add('active');
+  // Show New Permit button for sigeko and contractor
   const npBtn = document.getElementById('newPermitBtn');
-  if(npBtn) npBtn.style.display = ['sigeko','contractor'].includes(role)?'flex':'none';
-
-  let query = sb ? sb.from('permits').select('*').order('created_at',{ascending:false}) : null;
-  if(role==='contractor'||role==='polier') query = query?.eq('created_by', currentUser.id);
-
-  let permits = [];
-  if(query){
-    const {data} = await query.limit(20);
-    permits = data||[];
-  } else {
-    permits = getDemoPermits();
-  }
-
-  // Stats
-  const stats = [
-    {num: permits.length, label: 'Total Permits'},
-    {num: permits.filter(p=>p.status==='active').length, label: 'Active'},
-    {num: permits.filter(p=>p.status==='submitted'||p.status==='reviewing').length, label: 'Pending Review'},
-    {num: permits.filter(p=>p.status==='draft').length, label: 'Drafts'},
-  ];
-  document.getElementById('dashStats').innerHTML = stats.map(s=>`
-    <div class="stat"><div class="stat-num">${s.num}</div><div class="stat-label">${s.label}</div></div>
-  `).join('');
-
-  renderPermitList('dashPermitList', permits);
+  if (npBtn) npBtn.style.display = ['sigeko','contractor'].includes(role) ? 'flex' : 'none';
 }
 
-async function loadAllPermits(){
-  const {data} = await sb.from('permits').select('*,profiles(full_name,company)').order('created_at',{ascending:false});
-  renderPermitList('dashPermitList', data||[]);
-  showView('dashboard');
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const el = document.getElementById('view-' + id);
+  if (el) el.classList.add('active');
 }
 
-function renderPermitList(containerId, permits){
-  const el = document.getElementById(containerId);
-  if(!permits||!permits.length){
-    el.innerHTML = `<div style="text-align:center;padding:30px;color:var(--muted);font-family:var(--mono);font-size:11px;">No permits found / Keine Scheine gefunden</div>`;
-    return;
-  }
-  el.innerHTML = permits.map(p=>`
-    <div class="permit-item" onclick="openPermit('${p.id}')">
+// ── Dashboard ─────────────────────────────────────────────────────
+async function loadDashboard() {
+  const role = currentProfile.role;
+  let query = sb.from('permits').select('*').order('created_at', { ascending: false });
+  if (role !== 'sigeko') query = query.eq('created_by', currentUser.id);
+  const { data: permits } = await query.limit(20);
+  const list = permits || [];
+  document.getElementById('dashStats').innerHTML = [
+    { num: list.length, label: 'Total Permits' },
+    { num: list.filter(p => p.status==='active').length, label: 'Active' },
+    { num: list.filter(p => p.status==='submitted').length, label: 'Pending Review' },
+    { num: list.filter(p => p.status==='draft').length, label: 'Drafts' },
+  ].map(s => `<div class="stat"><div class="stat-num">${s.num}</div><div class="stat-label">${s.label}</div></div>`).join('');
+  const el = document.getElementById('permitList');
+  if (!list.length) { el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted);font-family:var(--mono);font-size:11px;">No permits yet / Noch keine Scheine</div>'; return; }
+  el.innerHTML = list.map(p => `
+    <div class="permit-item">
       <div class="pi-num">${p.permit_number||'DRAFT'}</div>
       <div class="pi-info">
         <div class="pi-company">${p.company||'—'} · ${p.ba||'—'}</div>
-        <div class="pi-detail">${p.location||'No location'} · ${formatDate(p.created_at)}</div>
+        <div class="pi-detail">${p.location||'No location'} · ${new Date(p.created_at).toLocaleDateString('en-GB')}</div>
       </div>
       <span class="pi-status ${p.status||'draft'}">${(p.status||'draft').replace('_',' ')}</span>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
-function getDemoPermits(){
-  return [
-    {id:'demo1',permit_number:'ECW-TRM-2026-001',company:'Vorwerk Rohrleitungsbau',ba:'BA Q3',location:'Axis 14, km 1+450',status:'active',created_at:new Date().toISOString()},
-    {id:'demo2',permit_number:'ECW-TRM-2026-002',company:'Implenia GmbH',ba:'BA Q2',location:'Axis 8, km 0+800',status:'reviewing',created_at:new Date().toISOString()},
-    {id:'demo3',permit_number:'DRAFT',company:'Bassenberg Gerüst',ba:'BA Wüst',location:'',status:'draft',created_at:new Date().toISOString()},
-  ];
-}
-
-// ── Admin Panel ────────────────────────────────────────────────
-async function loadAdminPanel(){
-  if(!sb){ document.getElementById('pendingUsers').innerHTML = '<div class="ib">Connect Supabase to manage users.</div>'; return; }
-  const {data:pending} = await sb.from('profiles').select('*').eq('status','pending');
-  const {data:all} = await sb.from('profiles').select('*').neq('status','pending').order('created_at');
-
-  document.getElementById('pendingUsers').innerHTML = (pending&&pending.length) ?
-    pending.map(u=>userCard(u,true)).join('') :
-    '<div style="color:var(--muted);font-family:var(--mono);font-size:11px;padding:12px;">No pending registrations / Keine ausstehenden Registrierungen</div>';
-
-  document.getElementById('allUsers').innerHTML = (all&&all.length) ?
-    all.map(u=>userCard(u,false)).join('') :
-    '<div style="color:var(--muted);font-family:var(--mono);font-size:11px;padding:12px;">No users yet</div>';
-}
-
-function userCard(u, isPending){
-  const initials = (u.full_name||'?').split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
-  return `
-    <div class="user-card">
+// ── Admin ─────────────────────────────────────────────────────────
+async function loadAdminPanel() {
+  const { data: pending } = await sb.from('profiles').select('*').eq('status','pending');
+  const { data: all } = await sb.from('profiles').select('*').neq('status','pending').order('created_at');
+  const renderUser = (u, isPending) => {
+    const initials = (u.full_name||'?').split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+    return `<div class="user-card">
       <div class="uc-avatar">${initials}</div>
       <div class="uc-info">
         <div class="uc-name">${u.full_name||'—'}</div>
-        <div class="uc-detail">${u.email} · ${u.company||'—'} · <span class="tb-role-badge ${u.role||''}" style="font-size:8px;padding:2px 6px;">${u.role||'—'}</span></div>
+        <div class="uc-detail">${u.email} · ${u.company||'—'} · <span class="role-badge ${u.role}" style="font-size:8px;padding:2px 6px;">${u.role||'—'}</span></div>
       </div>
       <div class="uc-actions">
         ${isPending ? `
           <button class="uc-btn approve" onclick="approveUser('${u.id}')">✓ Approve</button>
           <button class="uc-btn reject" onclick="rejectUser('${u.id}')">✗ Reject</button>
         ` : `
-          <select onchange="changeRole('${u.id}',this.value)" style="background:var(--s3);border:1px solid var(--b2);color:var(--text);padding:4px 8px;border-radius:var(--r);font-size:11px;">
+          <select onchange="changeRole('${u.id}',this.value)" style="background:var(--s3);border:1px solid var(--b2);color:var(--text);padding:4px 8px;border-radius:3px;font-size:11px;">
             <option value="worker" ${u.role==='worker'?'selected':''}>Worker</option>
             <option value="polier" ${u.role==='polier'?'selected':''}>Polier</option>
             <option value="contractor" ${u.role==='contractor'?'selected':''}>Contractor</option>
@@ -762,878 +473,397 @@ function userCard(u, isPending){
         `}
       </div>
     </div>`;
+  };
+  document.getElementById('pendingUsers').innerHTML = pending?.length ? pending.map(u=>renderUser(u,true)).join('') : '<div style="color:var(--muted);font-family:var(--mono);font-size:11px;padding:12px;">No pending registrations</div>';
+  document.getElementById('allUsers').innerHTML = all?.length ? all.map(u=>renderUser(u,false)).join('') : '<div style="color:var(--muted);font-family:var(--mono);font-size:11px;padding:12px;">No users yet</div>';
 }
 
-async function approveUser(id){
-  await sb.from('profiles').update({status:'approved'}).eq('id',id);
+async function approveUser(id) {
+  await sb.from('profiles').update({ status: 'approved' }).eq('id', id);
   loadAdminPanel();
 }
-async function rejectUser(id){
-  if(!confirm('Reject and delete this user?')) return;
-  await sb.from('profiles').delete().eq('id',id);
+async function rejectUser(id) {
+  if (!confirm('Reject and delete this user?')) return;
+  await sb.from('profiles').delete().eq('id', id);
   loadAdminPanel();
 }
-async function changeRole(id,role){
-  await sb.from('profiles').update({role}).eq('id',id);
+async function changeRole(id, role) {
+  await sb.from('profiles').update({ role }).eq('id', id);
   loadAdminPanel();
 }
 
-// ── Permit Workflow ────────────────────────────────────────────
-function startNewPermit(){
-  editingPermitId = null;
-  permitData = { status:'draft', permit_number: generatePermitNo() };
+// ── New Permit ────────────────────────────────────────────────────
+function showNewPermit() {
+  permitData = { permit_number: 'ECW-TRM-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random()*900)+100), status: 'draft' };
   permitStep = 0;
   buildPermitForm();
   showView('permit');
-  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
-}
-
-function generatePermitNo(){
-  const now = new Date();
-  const yr = now.getFullYear();
-  const num = String(Math.floor(Math.random()*900)+100);
-  return `ECW-TRM-${yr}-${num}`;
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
 }
 
 const STEPS = [
-  {label:'Job Info', sig:false},
-  {label:'Tätigkeit', sig:false},
-  {label:'Hazards', sig:false},
-  {label:'Gas/Emergency', sig:false},
-  {label:'SiGeKo Review', sig:true},
-  {label:'Briefing', sig:true},
-  {label:'Release §11', sig:true},
-  {label:'Active', sig:false},
+  {label:'Job Info'},{label:'Task'},{label:'Hazards'},{label:'Emergency'},
+  {label:'SiGeKo'},{label:'Briefing'},{label:'Release'},{label:'Active'}
 ];
 
-function buildPermitForm(){
-  // Stepper
-  document.getElementById('permitStepper').innerHTML = STEPS.map((s,i)=>`
-    <button class="step-btn ${s.sig?'sig-step':''} ${i===0?'active':''}" id="pstep${i}">
-      <span class="sn">0${i+1}</span>
-      <span class="sl">${s.label}</span>
-    </button>
-  `).join('');
-
-  renderPermitStep(0);
+function buildPermitForm() {
+  document.getElementById('permitStepper').innerHTML = STEPS.map((s,i) => `
+    <button class="step-btn ${i===0?'active':''}" id="pstep${i}">
+      <span class="sn">0${i+1}</span><span class="sl">${s.label}</span>
+    </button>`).join('');
+  renderStep(0);
 }
 
-function renderPermitStep(n){
+function renderStep(n) {
   permitStep = n;
-  STEPS.forEach((_,i)=>{
-    const btn = document.getElementById(`pstep${i}`);
-    if(!btn) return;
+  STEPS.forEach((_,i) => {
+    const btn = document.getElementById('pstep'+i);
+    if (!btn) return;
     btn.classList.remove('active','done');
-    if(i<n) btn.classList.add('done');
-    if(i===n) btn.classList.add('active');
+    if (i < n) btn.classList.add('done');
+    if (i === n) btn.classList.add('active');
   });
-
   const container = document.getElementById('permitSteps');
-  const role = currentProfile?.role||'contractor';
-  const isS = role==='sigeko';
-
-  const steps = [
-    renderStep1, renderStep2, renderStep3, renderStep4,
-    renderStep5, renderStep6, renderStep7, renderStep8
-  ];
-  container.innerHTML = '';
-  const el = document.createElement('div');
-  el.innerHTML = steps[n](isS);
-  container.appendChild(el);
-  bindStep(n);
+  const isSigeko = currentProfile?.role === 'sigeko';
+  const stepRenderers = [step1, step2, step3, step4, step5, step6, step7, step8];
+  container.innerHTML = stepRenderers[n](isSigeko);
 }
 
-function biField(enLabel, deLabel, id, type='text', placeholder_en='', placeholder_de=''){
-  return `
-    <div class="form-group">
-      <div class="bi-label"><span class="en">🇬🇧 ${enLabel}</span><span class="de">🇩🇪 ${deLabel}</span></div>
-      <div class="bi-input">
-        <input type="${type}" id="${id}_en" placeholder="${placeholder_en}" oninput="syncBi('${id}')">
-        <input type="${type}" id="${id}_de" placeholder="${placeholder_de}" oninput="syncBi('${id}')">
+function step1() {
+  return `<div class="card">
+    <div class="card-title">§1 General Information / Allgemeine Angaben</div>
+    <div class="card-sub">Who · Where · When — Permit valid 1 week, renewable every Tuesday</div>
+    <div class="form-grid">
+      <div class="field"><label>Permit No.</label><input type="text" id="f-permit_number" value="${permitData.permit_number||''}" readonly style="color:var(--yellow);font-family:var(--mono);"></div>
+      <div class="field"><label>Issue Date / Datum</label><input type="date" id="f-issue_date" value="${today()}"></div>
+      <div class="field"><label>Company / Firma *</label><input type="text" id="f-company" value="${permitData.company||''}" placeholder="Full legal company name"></div>
+      <div class="field"><label>Foreman / Polier *</label><input type="text" id="f-foreman" value="${permitData.foreman||''}" placeholder="Full name"></div>
+      <div class="field"><label>Foreman Mobile / Mobil *</label><input type="tel" id="f-foreman_tel" value="${permitData.foreman_tel||''}" placeholder="+49 …"></div>
+      <div class="field"><label>Bauabschnitt / BA *</label>
+        <select id="f-ba">
+          ${['BA Q2','BA Q3','BA Q2/Q3','BA Wüst','BA Q10','BA Q4','BA DES'].map(b=>`<option ${permitData.ba===b?'selected':''}>${b}</option>`).join('')}
+        </select>
       </div>
-    </div>`;
+      <div class="field" style="grid-column:1/-1;"><label>Exact Location / Genaue Örtlichkeit *</label><input type="text" id="f-location" value="${permitData.location||''}" placeholder="Axis, chainage, depth…"></div>
+      <div class="field"><label>Drawing / GB-Nr.</label><input type="text" id="f-drawing" value="${permitData.drawing||''}" placeholder="Drawing number"></div>
+      <div class="field"><label>SiGePlan Revision *</label><input type="text" id="f-sige_plan" value="${permitData.sige_plan||''}" placeholder="e.g. Rev. 04"></div>
+    </div>
+    <div class="btn-row"><button class="btn btn-primary" onclick="nextStep(0)">Next / Weiter →</button></div>
+  </div>`;
 }
 
-function biSelect(enLabel, deLabel, id, options){
-  const opts = options.map(o=>`<option value="${o.v}">${o.en}</option>`).join('');
-  const optsDE = options.map(o=>`<option value="${o.v}">${o.de}</option>`).join('');
-  return `
-    <div class="form-group">
-      <div class="bi-label"><span class="en">🇬🇧 ${enLabel}</span><span class="de">🇩🇪 ${deLabel}</span></div>
-      <div class="bi-input">
-        <select id="${id}_en" oninput="syncBi('${id}')">${opts}</select>
-        <select id="${id}_de" oninput="syncBi('${id}')">${optsDE}</select>
-      </div>
-    </div>`;
+function step2() {
+  const types = [['hot_work','🔥 Hot Work (Welding/Cutting)'],['confined','⬛ Confined Space / Ex-Zone'],['voltage','⚡ Near live voltage'],['earthworks','⛏ Earthworks / Excavations'],['fall','📏 Fall hazard > 1m'],['dust','💨 Dust / Gases / Vapours'],['crane','🏗 Crane / Suspended loads'],['chemicals','☣ Chemicals / Hazardous substances']];
+  return `<div class="card">
+    <div class="card-title">§2–3 Task Description / Tätigkeitsbeschreibung</div>
+    <div class="card-sub">Permit type · Task · Equipment</div>
+    <div class="check-grid">${types.map(([v,l])=>`<div class="ci" onclick="toggleCi(this,'${v}')"><div class="cb"></div><span class="cl">${l}</span></div>`).join('')}</div>
+    <div class="field" style="margin-top:12px;"><label>Task description / Tätigkeitsbeschreibung *</label><textarea id="f-task_desc" rows="4" style="background:var(--s2);border:1px solid var(--b2);border-radius:3px;color:var(--text);font-family:var(--sans);font-size:13px;padding:10px;width:100%;outline:none;resize:vertical;" placeholder="What is being done? Method? Tools? / Was wird gemacht? Methode? Werkzeuge?">${permitData.task_desc||''}</textarea></div>
+    <table class="tbl" style="margin-top:12px;"><thead><tr><th>Device / Gerät</th><th>Type</th><th>UVV Date</th><th>Operator</th><th>Qualification</th></tr></thead>
+    <tbody id="eqBody"><tr><td><input type="text" placeholder="e.g. Excavator"></td><td><input type="text" placeholder="Type"></td><td><input type="date"></td><td><input type="text" placeholder="Name"></td><td><input type="text" placeholder="Cert."></td></tr></tbody></table>
+    <button class="add-row" onclick="addEqRow()">+ Add equipment</button>
+    <div class="btn-row"><button class="btn btn-secondary" onclick="renderStep(0)">← Back</button><button class="btn btn-primary" onclick="nextStep(1)">Next →</button></div>
+  </div>`;
 }
 
-function syncBi(id){
-  const en = document.getElementById(id+'_en');
-  const de = document.getElementById(id+'_de');
-  if(en&&de&&en!==document.activeElement) de.value = en.value;
-  if(en&&de&&de===document.activeElement) en.value = de.value;
-  permitData[id] = en?.value||de?.value||'';
+function step3() {
+  return `<div class="card">
+    <div class="card-title">§4 Hazard Analysis & Controls / Gefährdungsanalyse</div>
+    <div style="font-family:var(--mono);font-size:9px;color:var(--muted2);text-transform:uppercase;margin-bottom:8px;">Hazards / Gefährdungen</div>
+    <div class="check-grid">${[['fire','🔥 Fire'],['fall2','📏 Fall'],['elec','⚡ Electrical'],['confined2','⬛ Confined space'],['dust2','💨 Dust/gases'],['crane2','🏗 Crane'],['excavation','⛏ Excavation'],['noise','🔊 Noise >85dB'],['chem','☣ Hazardous subst.'],['vibration','📳 Vibration']].map(([v,l])=>`<div class="ci" onclick="toggleCi(this,'${v}')"><div class="cb"></div><span class="cl">${l}</span></div>`).join('')}</div>
+    <div style="font-family:var(--mono);font-size:9px;color:var(--muted2);text-transform:uppercase;margin:12px 0 8px;">PPE / PSA</div>
+    <div class="check-grid">${[['helmet','🪖 Helmet EN 397'],['shoes','👟 Shoes S3'],['vest','🦺 Hi-vis vest'],['glasses','🥽 Glasses'],['hearing','🔇 Hearing prot.'],['gloves','🧤 Gloves'],['resp','😷 Respiratory'],['harness','🪝 Fall arrest'],['welder','🧥 Welder prot.']].map(([v,l])=>`<div class="ci" onclick="toggleCi(this,'${v}')"><div class="cb"></div><span class="cl">${l}</span></div>`).join('')}</div>
+    <div class="btn-row"><button class="btn btn-secondary" onclick="renderStep(1)">← Back</button><button class="btn btn-primary" onclick="nextStep(2)">Next →</button></div>
+  </div>`;
 }
 
-function renderStep1(isS){
-  return `
-    <div class="card">
-      <div class="card-header">
-        <div class="card-num red">01</div>
-        <div><div class="card-title">General Information / Allgemeine Angaben</div><div class="card-sub">Who · Where · When · Which shift</div></div>
-        <div class="card-badge contractor">Contractor</div>
-      </div>
-      <div class="ib"><strong>EN:</strong> Permit valid 1 week – renewable every Tuesday at coordination meeting. Submit by Monday 15:00.<br><strong>DE:</strong> Schein gültig 1 Woche – Erneuerung jeden Dienstag. Einreichen bis Montag 15:00.</div>
-      <div class="form-grid">
-        <div class="form-group">
-          <div class="bi-label"><span class="en">🇬🇧 Permit No.</span><span class="de">🇩🇪 Scheinnummer</span></div>
-          <div class="bi-input">
-            <input type="text" id="permitNo_en" value="${permitData.permit_number||''}" readonly style="color:var(--yellow);font-family:var(--mono);">
-            <input type="text" id="permitNo_de" value="${permitData.permit_number||''}" readonly style="color:var(--yellow);font-family:var(--mono);">
-          </div>
-        </div>
-        <div class="form-group">
-          <div class="bi-label"><span class="en">🇬🇧 Issue Date</span><span class="de">🇩🇪 Ausstellungsdatum</span></div>
-          <div class="bi-input">
-            <input type="date" id="issueDate_en" value="${today()}">
-            <input type="date" id="issueDate_de" value="${today()}">
-          </div>
-        </div>
-      </div>
-      ${biField('Executing Company','Ausführende Firma','company','text','Full legal name','Vollständiger Firmenname')}
-      ${biField('Foreman / Polier','Polier / Vorarbeiter','foreman','text','Full name','Vollständiger Name')}
-      ${biField('Foreman Mobile','Polier Mobilnummer','foremanTel','tel','+49 …','+49 …')}
-      ${biSelect('Bauabschnitt / BA','Bauabschnitt / BA','ba',[
-        {v:'BA Q2',en:'BA Q2',de:'BA Q2'},{v:'BA Q3',en:'BA Q3',de:'BA Q3'},
-        {v:'BA Q2/Q3',en:'BA Q2/Q3',de:'BA Q2/Q3'},{v:'BA Wüst',en:'BA Wüst',de:'BA Wüst'},
-        {v:'BA Q10',en:'BA Q10',de:'BA Q10'},{v:'BA Q4',en:'BA Q4',de:'BA Q4'},
-        {v:'BA DES',en:'BA DES',de:'BA DES'},
-      ])}
-      ${biField('Exact Location','Genaue Örtlichkeit','location','text','Axis, chainage, depth…','Achse, Kettenkilometer, Tiefe…')}
-      ${biField('Drawing / GB-Nr.','Zeichnung / GB-Nr.','drawing','text','Drawing number','Zeichnungsnummer')}
-      ${biField('SiGePlan Revision','SiGePlan Revision','sigePlan','text','e.g. Rev. 04','z.B. Rev. 04')}
-      <div class="btn-row">
-        <button class="btn btn-primary" onclick="advanceStep(0)">Next / Weiter →</button>
-      </div>
-    </div>`;
+function step4() {
+  return `<div class="card">
+    <div class="card-title">§5–6 Gas Measurement & Emergency Plan</div>
+    <div class="form-grid">
+      <div class="field"><label>Assembly Point / Sammelplatz *</label><input type="text" id="f-assembly" value="${permitData.assembly||''}" placeholder="e.g. North car park, Gate 2"></div>
+      <div class="field"><label>First Aider / Ersthelfer *</label><input type="text" id="f-first_aider" value="${permitData.first_aider||''}" placeholder="Name (on site)"></div>
+      <div class="field"><label>First Aider Mobile *</label><input type="tel" id="f-first_aider_tel" value="${permitData.first_aider_tel||''}" placeholder="+49 …"></div>
+      <div class="field"><label>Nearest Hospital / Nächstes KH *</label><input type="text" id="f-hospital" value="${permitData.hospital||''}" placeholder="Name + address"></div>
+    </div>
+    <div class="btn-row"><button class="btn btn-secondary" onclick="renderStep(2)">← Back</button><button class="btn btn-primary" onclick="submitPermit()">Submit to SiGeKo →</button></div>
+  </div>`;
 }
 
-function renderStep2(isS){
-  const types = [
-    ['hot_work','🔥 Hot Work (Welding/Cutting)','🔥 Heißarbeiten (Schweißen/Schneiden)'],
-    ['confined','⬛ Confined Space / Ex-Zone','⬛ Beengter Raum / Ex-Zone'],
-    ['voltage','⚡ Near live voltage','⚡ Nahe Spannung'],
-    ['earthworks','⛏ Earthworks / Excavations','⛏ Erdarbeiten / Grabungen'],
-    ['fall','📏 Fall hazard > 1m','📏 Absturzgefahr > 1m'],
-    ['dust','💨 Dust / Gases / Vapours','💨 Staub / Gase / Dämpfe'],
-    ['crane','🏗 Crane / Suspended loads','🏗 Kran / Schwebende Lasten'],
-    ['chemicals','☣ Chemicals / Hazardous substances','☣ Chemikalien / Gefahrstoffe'],
-  ];
-  return `
-    <div class="card">
-      <div class="card-header">
-        <div class="card-num">02</div>
-        <div><div class="card-title">Task Description / Tätigkeitsbeschreibung</div><div class="card-sub">Permit type · Task · Equipment</div></div>
-        <div class="card-badge contractor">Contractor</div>
-      </div>
-      <div class="sec">Permit Type / Tätigkeitsart</div>
-      <div class="ib warn"><strong>EN:</strong> Tick all that apply. Hot Work activates §10 Fire Watch. Confined Space activates §5 Gas Measurement.<br><strong>DE:</strong> Alle Zutreffenden ankreuzen. Heißarbeiten aktiviert §10. Beengter Raum aktiviert §5.</div>
-      <div class="form-grid">
-        <div>
-          <div style="font-family:var(--mono);font-size:9px;color:var(--blue);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">🇬🇧 English</div>
-          <div style="display:flex;flex-direction:column;gap:5px;">
-            ${types.map(([v,en])=>`<div class="ci" onclick="toggleCi(this,'${v}')" id="ci_en_${v}"><div class="cb"></div><span class="cl">${en}</span></div>`).join('')}
-          </div>
-        </div>
-        <div>
-          <div style="font-family:var(--mono);font-size:9px;color:var(--yellow);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">🇩🇪 Deutsch</div>
-          <div style="display:flex;flex-direction:column;gap:5px;">
-            ${types.map(([v,,de])=>`<div class="ci" onclick="toggleCiSync('${v}')" id="ci_de_${v}"><div class="cb"></div><span class="cl">${de}</span></div>`).join('')}
-          </div>
-        </div>
-      </div>
-      <div class="sec mt">Task Description / Tätigkeitsbeschreibung</div>
-      <div class="form-group">
-        <div class="bi-label"><span class="en">🇬🇧 What is being done? Method? Tools?</span><span class="de">🇩🇪 Was wird gemacht? Methode? Werkzeuge?</span></div>
-        <div class="bi-input">
-          <textarea id="taskDesc_en" rows="4" placeholder="e.g. Pipe welding DN400, arc method, in trench BA Q3…" oninput="permitData.taskDesc=this.value"></textarea>
-          <textarea id="taskDesc_de" rows="4" placeholder="z.B. Rohrschweißen DN400, Lichtbogen, im Graben BA Q3…" oninput="permitData.taskDesc=this.value"></textarea>
-        </div>
-      </div>
-      <div class="sec">Equipment / Gerätetabelle</div>
-      <table class="tbl" id="eqTable">
-        <thead><tr>
-          <th>Device / Gerät</th><th>Type</th><th>UVV Inspection</th><th>Operator</th><th>Qualification</th>
-        </tr></thead>
-        <tbody id="eqBody">
-          <tr><td><input type="text" placeholder="e.g. Excavator"></td><td><input type="text" placeholder="Liebherr 914"></td><td><input type="date"></td><td><input type="text" placeholder="Name"></td><td><input type="text" placeholder="Cert."></td></tr>
-        </tbody>
-      </table>
-      <button class="add-row" onclick="addEqRow()">+ Add equipment row</button>
-      <div class="btn-row">
-        <button class="btn btn-secondary" onclick="renderPermitStep(0)">← Back</button>
-        <button class="btn btn-primary" onclick="advanceStep(1)">Next / Weiter →</button>
-      </div>
-    </div>`;
+function step5(isSigeko) {
+  if (!isSigeko) return `<div class="card"><div class="ib" style="border-left-color:var(--sigred);">⚠ This section is completed by SiGeKo only. Please wait for review.<br>Dieser Abschnitt wird nur vom SiGeKo ausgefüllt. Bitte auf Prüfung warten.</div></div>`;
+  return `<div class="card">
+    <div class="card-title">§8 SiGeKo Review & Conditions / SiGeKo-Prüfung & Auflagen</div>
+    <div class="ib" style="border-left-color:var(--sigred);color:#ffcccc;">⚠ This section is completed exclusively by the SiGeKo.</div>
+    <div class="check-grid">${[['alarm','TRM Alarm Protocol on site'],['concept','IAW Safety Concept confirmed'],['rules','Site rules posted'],['plan','SiGe-Plan current'],['gas','TRM gas clearance required'],['anchor','PSAgA anchor points inspected'],['shoring','DIN 4124 shoring verified'],['noflame','TRM: open flame prohibited']].map(([v,l])=>`<div class="ci" onclick="toggleRedCi(this,'${v}')"><div class="cb"></div><span class="cl">${l}</span></div>`).join('')}</div>
+    <div class="field" style="margin-top:12px;"><label>Additional Conditions EN / Weitere Auflagen DE</label>
+      <textarea id="f-conditions_en" rows="3" style="background:var(--s2);border:1px solid var(--b2);border-radius:3px;color:var(--text);font-family:var(--sans);font-size:13px;padding:10px;width:100%;outline:none;resize:vertical;margin-bottom:6px;" placeholder="EN: Special conditions…">${permitData.conditions_en||''}</textarea>
+      <textarea id="f-conditions_de" rows="3" style="background:var(--s2);border:1px solid var(--b2);border-radius:3px;color:var(--text);font-family:var(--sans);font-size:13px;padding:10px;width:100%;outline:none;resize:vertical;" placeholder="DE: Besondere Auflagen…">${permitData.conditions_de||''}</textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn" style="background:rgba(255,59,59,0.1);color:var(--sigred);border:1px solid var(--sigred);" onclick="requestRevision()">⚠ Request Revision</button>
+      <button class="btn btn-primary" style="margin-left:auto;" onclick="sigekoApprove()">Approved → Briefing</button>
+    </div>
+  </div>`;
 }
 
-function renderStep3(isS){
-  const hazards = [
-    ['fire','🔥 Fire hazard','🔥 Brandgefahr'],
-    ['fall2','📏 Fall from height','📏 Absturzgefahr'],
-    ['elec','⚡ Electrical','⚡ Elektrische Gefährdung'],
-    ['confined2','⬛ Confined space','⬛ Beengter Raum'],
-    ['dust2','💨 Dust/gases','💨 Staub/Gase'],
-    ['crane2','🏗 Crane/loads','🏗 Kran/Lasten'],
-    ['excavation','⛏ Excavation collapse','⛏ Erdeinbruch'],
-    ['explosion','💥 Explosion','💥 Explosionsgefahr'],
-    ['noise','🔊 Noise >85dB','🔊 Lärm >85dB'],
-    ['chem','☣ Hazardous subst.','☣ Gefahrstoffe'],
-    ['vibration','📳 Vibration','📳 Vibration'],
-  ];
-  const ppe = [
-    ['helmet','🪖 Safety helmet EN 397','🪖 Schutzhelm EN 397'],
-    ['shoes','👟 Safety shoes S3','👟 Sicherheitsschuhe S3'],
-    ['vest','🦺 Hi-vis vest EN 20471','🦺 Warnweste EN 20471'],
-    ['glasses','🥽 Safety glasses EN 166','🥽 Schutzbrille EN 166'],
-    ['hearing','🔇 Hearing prot. EN 352','🔇 Gehörschutz EN 352'],
-    ['gloves','🧤 Protective gloves','🧤 Schutzhandschuhe'],
-    ['resp','😷 Respiratory EN 149','😷 Atemschutz EN 149'],
-    ['harness','🪝 Fall arrest EN 361','🪝 PSAgA EN 361'],
-    ['welder','🧥 Welder prot. EN 11611','🧥 Schweißerschutz EN 11611'],
-  ];
-  return `
-    <div class="card">
-      <div class="card-header">
-        <div class="card-num">03</div>
-        <div><div class="card-title">Hazard Analysis & Controls / Gefährdungsanalyse</div></div>
-        <div class="card-badge contractor">Contractor</div>
-      </div>
-      <div class="sec">Hazards / Gefährdungen</div>
-      <div class="form-grid">
-        <div>
-          <div style="font-family:var(--mono);font-size:9px;color:var(--blue);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">🇬🇧 English</div>
-          ${hazards.map(([v,en])=>`<div class="ci" onclick="toggleCiSync2('${v}')" id="hz_en_${v}" style="margin-bottom:4px;"><div class="cb"></div><span class="cl">${en}</span></div>`).join('')}
-        </div>
-        <div>
-          <div style="font-family:var(--mono);font-size:9px;color:var(--yellow);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">🇩🇪 Deutsch</div>
-          ${hazards.map(([v,,de])=>`<div class="ci" onclick="toggleCiSync2('${v}')" id="hz_de_${v}" style="margin-bottom:4px;"><div class="cb"></div><span class="cl">${de}</span></div>`).join('')}
-        </div>
-      </div>
-      <div class="sec mt orange">PPE / PSA-Spezifikation</div>
-      <div class="form-grid">
-        <div>
-          ${ppe.map(([v,en])=>`<div class="ci" onclick="toggleCiSync3('${v}')" id="ppe_en_${v}" style="margin-bottom:4px;"><div class="cb"></div><span class="cl">${en}</span></div>`).join('')}
-        </div>
-        <div>
-          ${ppe.map(([v,,de])=>`<div class="ci" onclick="toggleCiSync3('${v}')" id="ppe_de_${v}" style="margin-bottom:4px;"><div class="cb"></div><span class="cl">${de}</span></div>`).join('')}
-        </div>
-      </div>
-      <div class="btn-row">
-        <button class="btn btn-secondary" onclick="renderPermitStep(1)">← Back</button>
-        <button class="btn btn-primary" onclick="advanceStep(2)">Next / Weiter →</button>
-      </div>
-    </div>`;
+function step6() {
+  return `<div class="card">
+    <div class="card-title">§9 Safety Briefing Record / Unterweisungsnachweis</div>
+    <div class="ib" style="border-left-color:var(--sigred);color:#ffcccc;">⚠ Workers sign PHYSICALLY on the printed sheet. Digital confirmation here is for foreman/SiGeKo record only.</div>
+    <table class="tbl"><thead><tr><th>#</th><th>Name (Block letters)</th><th>Function</th><th>Date</th><th>Phys. Signed ✓</th></tr></thead>
+    <tbody id="workerBody">${[1,2,3,4].map(i=>`<tr><td style="padding:7px 10px;font-family:var(--mono);font-size:10px;color:var(--muted2);text-align:center">${i}</td><td><input type="text" placeholder="SURNAME, Firstname"></td><td><input type="text" placeholder="Function"></td><td><input type="date" value="${today()}"></td><td style="text-align:center"><input type="checkbox" style="width:17px;height:17px;accent-color:var(--sigred);cursor:pointer;"></td></tr>`).join('')}</tbody></table>
+    <button class="add-row" onclick="addWorkerRow()">+ Add worker</button>
+    <div class="form-grid" style="margin-top:12px;">
+      <div class="field"><label>Briefing by / Unterweisung durch</label><input type="text" id="f-brief_by" placeholder="Name + Function"></div>
+      <div class="field"><label>Briefing Date & Time</label><input type="datetime-local" id="f-brief_time"></div>
+    </div>
+    <div class="btn-row"><button class="btn btn-secondary" onclick="renderStep(4)">← Back</button><button class="btn btn-primary" onclick="renderStep(6)">Proceed to Release →</button></div>
+  </div>`;
 }
 
-function renderStep4(isS){
-  return `
-    <div class="card">
-      <div class="card-header">
-        <div class="card-num">04</div>
-        <div><div class="card-title">Gas Measurement & Emergency Plan / Gasfreimessung & Notfallplan</div></div>
-        <div class="card-badge contractor">Contractor</div>
+function step7() {
+  const vFrom = getNextTuesdayStr(), vUntil = getNextMondayStr();
+  const isSigeko = currentProfile?.role === 'sigeko';
+  return `<div class="card">
+    <div class="card-title">§11 Work Release / Freigabe und Unterschriften</div>
+    <div class="ib" style="border-left-color:var(--sigred);color:#ffcccc;">⚠ Two mandatory signatures. Without both, no work starts.</div>
+    <div class="vbar">
+      <div class="vi"><span class="vi-label">Permit No.</span><span class="vi-value">${permitData.permit_number||'—'}</span></div>
+      <div class="vi-div"></div>
+      <div class="vi"><span class="vi-label">Valid From</span><span class="vi-value">${vFrom}</span></div>
+      <div class="vi-div"></div>
+      <div class="vi"><span class="vi-label">Valid Until</span><span class="vi-value" style="color:var(--green)">${vUntil}</span></div>
+      <div class="vi-div"></div>
+      <div class="vi"><span class="vi-label">Renewal</span><span class="vi-value" style="color:var(--orange)">Every Tuesday</span></div>
+    </div>
+    <div class="sig-block">
+      <div class="sig-title">✎ SiGeKo / BL – Work Release / Arbeitsfreigabe</div>
+      <div class="sig-confirm"><input type="checkbox" id="sig1chk"><div class="sig-confirm-text">🇬🇧 I confirm all prerequisites checked, all controls effective – WORK RELEASED.<br>🇩🇪 Alle Voraussetzungen geprüft, alle Maßnahmen wirksam – SCHEIN FREIGEGEBEN.</div></div>
+      <div class="sig-fields">
+        <div class="sig-field"><label>Full Name *</label><input type="text" id="sig1name" placeholder="Type full name"></div>
+        <div class="sig-field"><label>Function</label><input type="text" id="sig1role" placeholder="e.g. SiGeKo ECW GmbH"></div>
       </div>
-      <div class="sec">Gas Measurement / Gasfreimessung</div>
-      <div class="ib"><strong>EN:</strong> Required if Confined Space/Ex-Zone selected. TRM: additional TRM gas clearance always required.<br><strong>DE:</strong> Erforderlich bei Beengtem Raum/Ex-Zone. TRM: zusätzliche TRM-Gasfreimessung immer erforderlich.</div>
-      <div class="form-grid">
-        ${biField('Device Type','Messgerät Typ','gasDevice','text','e.g. Dräger X-am 5100','z.B. Dräger X-am 5100').replace('form-group','form-group').replace('<div class="bi-input">','<div class="bi-input">')}
-        <div class="form-group">
-          <div class="bi-label"><span class="en">🇬🇧 Calibration Valid Until</span><span class="de">🇩🇪 Kalibrierung gültig bis</span></div>
-          <div class="bi-input"><input type="date" id="gasCal_en"><input type="date" id="gasCal_de"></div>
-        </div>
+    </div>
+    <div class="sig-block">
+      <div class="sig-title">✎ Foreman / Polier – Acceptance / Übernahme</div>
+      <div class="sig-confirm"><input type="checkbox" id="sig2chk"><div class="sig-confirm-text">🇬🇧 Controls implemented, site known, alarm protocol received – on-site responsibility accepted.<br>🇩🇪 Maßnahmen umgesetzt, Gelände bekannt, Alarmprotokoll erhalten – Vor-Ort-Verantwortung übernommen.</div></div>
+      <div class="sig-fields">
+        <div class="sig-field"><label>Full Name *</label><input type="text" id="sig2name" placeholder="Type full name"></div>
+        <div class="sig-field"><label>Company</label><input type="text" id="sig2company" placeholder="Executing company"></div>
       </div>
-      <table class="tbl">
-        <thead><tr><th>Measurement</th><th>O₂ % (19.5-23)</th><th>Ex %LEL (&lt;20)</th><th>CO ppm (≤20)</th><th>H₂S ppm (≤1)</th><th>Time</th><th>Result</th></tr></thead>
-        <tbody>
-          ${[1,2,3].map(i=>`<tr>
-            <td style="padding:7px 10px;font-family:var(--mono);font-size:10px;color:var(--muted2)">Meas. ${i}</td>
-            <td><input type="number" step="0.1" placeholder="20.9" oninput="evalGas(${i})"></td>
-            <td><input type="number" step="0.1" placeholder="0" oninput="evalGas(${i})"></td>
-            <td><input type="number" step="1" placeholder="0" oninput="evalGas(${i})"></td>
-            <td><input type="number" step="0.1" placeholder="0" oninput="evalGas(${i})"></td>
-            <td><input type="time"></td>
-            <td id="gr${i}"><span style="color:var(--muted);font-size:10px;">—</span></td>
-          </tr>`).join('')}
-        </tbody>
-      </table>
-      <div class="sec mt orange">Emergency Plan / Notfallplan</div>
-      <div class="ib warn"><strong>Always mandatory / Immer Pflicht.</strong></div>
-      <div class="form-grid">
-        ${biField('Assembly Point','Sammelplatz','assembly','text','e.g. North car park, Gate 2','z.B. Parkplatz Nord, Tor 2')}
-        ${biField('First Aider Name','Ersthelfer Name','firstAider','text','Name (must be on site)','Name (muss vor Ort sein)')}
-        ${biField('First Aider Mobile','Ersthelfer Mobil','firstAiderTel','tel','+49 …','+49 …')}
-        ${biField('Nearest Hospital','Nächstes KH','hospital','text','Name + address','Name + Adresse')}
-      </div>
-      <div class="btn-row">
-        <button class="btn btn-secondary" onclick="renderPermitStep(2)">← Back</button>
-        <button class="btn btn-primary" onclick="submitPermit()">Submit to SiGeKo / An SiGeKo senden →</button>
-      </div>
-    </div>`;
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="renderStep(5)">← Back</button>
+      <button class="btn" style="background:linear-gradient(135deg,var(--green),#15803d);color:#fff;" onclick="releasePermit()">✓ Release & Generate PDF</button>
+    </div>
+  </div>`;
 }
 
-function renderStep5(isS){
-  if(!isS) return `<div class="card"><div class="ib warn"><strong>EN:</strong> This section is completed by SiGeKo only. Please wait for SiGeKo review.<br><strong>DE:</strong> Dieser Abschnitt wird nur vom SiGeKo ausgefüllt. Bitte auf SiGeKo-Prüfung warten.</div></div>`;
-  const checks = [
-    ['alarm','TRM Alarm Protocol on site & known / TRM Alarmprotokoll vorhanden & bekannt'],
-    ['concept','IAW Safety Concept confirmed / Sicherheitskonzept IAW bestätigt'],
-    ['rules','Site rules posted / Baustellenordnung ausgehängt'],
-    ['sigePlan','SiGe-Plan revision current / SiGe-Plan Revision aktuell'],
-    ['gasCheck','TRM gas clearance required before start / TRM Gasfreimessung vor Arbeitsbeginn'],
-    ['anchor','PSAgA anchor points inspected / Anschlagpunkte PSAgA geprüft'],
-    ['shoring','DIN 4124 shoring verified / DIN 4124 Verbau kontrolliert'],
-    ['noFlame','TRM: open flame prohibited / TRM: offenes Feuer verboten'],
-    ['hotPermit','Hot work permit from TRM if applicable / Heißarbeitserlaubnis TRM falls erforderlich'],
-    ['interface','Interface with adjacent trades cleared / Schnittstellen zu Nachbargewerken geklärt'],
-  ];
-  return `
-    <div class="card">
-      <div class="card-header">
-        <div class="card-num sigred">05</div>
-        <div><div class="card-title">SiGeKo Review & Special Conditions / SiGeKo-Prüfung & Auflagen</div></div>
-        <div class="card-badge sigeko">SiGeKo Only</div>
-      </div>
-      <div class="ib danger"><strong>⚠ EN:</strong> Completed exclusively by SiGeKo. All conditions legally binding.<br><strong>DE:</strong> Ausschließlich vom SiGeKo ausgefüllt. Alle Auflagen rechtlich bindend.</div>
-      <div class="sec red">SiGeKo Checklist / SiGeKo-Checkliste</div>
-      <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:14px;">
-        ${checks.map(([v,label])=>`
-          <div class="ci" onclick="toggleRed(this,'${v}')" id="sk_${v}">
-            <div class="cb"></div>
-            <span class="cl">${label}</span>
-          </div>`).join('')}
-      </div>
-      <div class="sec red">Additional Conditions / Weitere Auflagen</div>
-      <div class="form-group">
-        <div class="bi-label"><span class="en">🇬🇧 Special conditions (EN)</span><span class="de">🇩🇪 Besondere Auflagen (DE)</span></div>
-        <div class="bi-input">
-          <textarea id="conditions_en" rows="4" placeholder="e.g. Excavation only with trench lining · P2 mask mandatory…" oninput="permitData.conditions_en=this.value"></textarea>
-          <textarea id="conditions_de" rows="4" placeholder="z.B. Schachtarbeiten nur mit Einlegeverbau · P2-Maske Pflicht…" oninput="permitData.conditions_de=this.value"></textarea>
-        </div>
-      </div>
-      <div class="btn-row">
-        <button class="btn btn-danger" onclick="requestRevision()">⚠ Request Revision / Revision anfordern</button>
-        <button class="btn btn-primary" style="margin-left:auto;" onclick="sigekoApprove()">Approved → Proceed to Briefing / Genehmigt →</button>
-      </div>
-    </div>`;
+function step8() {
+  const isSigeko = currentProfile?.role === 'sigeko';
+  return `<div class="card">
+    <div class="released-banner"><h2>✓ PERMIT RELEASED / FREIGEGEBEN</h2><p>${permitData.permit_number||''} · Valid 1 week · Renewable every Tuesday</p></div>
+    <div class="ib" style="border-left-color:var(--green);color:#bbffcc;">✓ Permit is active. Display printed copy at work location. Workers must physically sign the briefing sheet.</div>
+    <div class="btn-row">
+      ${isSigeko ? `<button class="btn btn-pdf" onclick="generatePDF()">⬇ Download PDF / PDF Herunterladen</button>` : `<button class="btn btn-secondary" disabled>🔒 PDF – SiGeKo only / Nur SiGeKo</button>`}
+      <button class="btn btn-secondary" onclick="showNewPermit()">↺ New Permit</button>
+      <button class="btn btn-secondary" onclick="showView('dashboard');loadDashboard();">← Dashboard</button>
+    </div>
+  </div>`;
 }
 
-function renderStep6(isS){
-  const today_val = today();
-  return `
-    <div class="card">
-      <div class="card-header">
-        <div class="card-num sigred">06</div>
-        <div><div class="card-title">Safety Briefing Record / Unterweisungsnachweis §9</div><div class="card-sub">Every worker must physically sign the printed sheet. No signature = no deployment.</div></div>
-        <div class="card-badge all">All Workers</div>
-      </div>
-      <div class="ib danger">
-        <strong>⚠ EN:</strong> Workers sign PHYSICALLY on the printed sheet only. Digital confirmation here is for the foreman/SiGeKo record only.<br>
-        <strong>DE:</strong> Arbeiter unterschreiben NUR physisch auf dem ausgedruckten Schein. Digitale Bestätigung hier gilt nur für Polier/SiGeKo-Nachweis.
-      </div>
-      <div class="sec red">Worker Register / Arbeiterliste</div>
-      <table class="tbl" id="workerTable">
-        <thead><tr><th>#</th><th>Name (Block letters)</th><th>Function / Qualification</th><th>Date</th><th>Physically Signed (Foreman confirms)</th></tr></thead>
-        <tbody id="workerBody">
-          ${[1,2,3,4].map(i=>`<tr>
-            <td style="padding:7px 10px;font-family:var(--mono);font-size:10px;color:var(--muted2);text-align:center">${i}</td>
-            <td><input type="text" placeholder="SURNAME, Firstname"></td>
-            <td><input type="text" placeholder="Function / Qualification"></td>
-            <td><input type="date" value="${today_val}"></td>
-            <td style="text-align:center"><input type="checkbox" style="width:17px;height:17px;accent-color:var(--sigred);cursor:pointer;" title="Confirm physical signature received"></td>
-          </tr>`).join('')}
-        </tbody>
-      </table>
-      <button class="add-row" onclick="addWorkerRow()">+ Add worker / Arbeiter hinzufügen</button>
-      <div class="form-grid mt">
-        <div class="form-group">
-          <div class="bi-label"><span class="en">🇬🇧 Briefing conducted by</span><span class="de">🇩🇪 Unterweisung durch</span></div>
-          <div class="bi-input">
-            <input type="text" id="briefBy_en" placeholder="Name + Function" oninput="permitData.briefBy=this.value">
-            <input type="text" id="briefBy_de" placeholder="Name + Funktion" oninput="permitData.briefBy=this.value">
-          </div>
-        </div>
-        <div class="form-group">
-          <div class="bi-label"><span class="en">🇬🇧 Briefing Date & Time</span><span class="de">🇩🇪 Datum & Uhrzeit Unterweisung</span></div>
-          <div class="bi-input"><input type="datetime-local" id="briefTime_en"><input type="datetime-local" id="briefTime_de"></div>
-        </div>
-      </div>
-      <div class="btn-row">
-        <button class="btn btn-secondary" onclick="renderPermitStep(4)">← Back</button>
-        <button class="btn btn-primary" onclick="advanceStep(5)">Proceed to Release / Zur Freigabe →</button>
-      </div>
-    </div>`;
+// ── Permit actions ─────────────────────────────────────────────────
+function nextStep(from) {
+  collectFields();
+  renderStep(from + 1);
 }
 
-function renderStep7(isS){
-  const vFrom = getNextTuesdayStr();
-  const vUntil = getNextMondayStr();
-  return `
-    <div class="card">
-      <div class="card-header">
-        <div class="card-num sigred">07</div>
-        <div><div class="card-title">Work Release / Freigabe §11</div><div class="card-sub">Two mandatory authorisations. Without both, no work starts.</div></div>
-        <div class="card-badge sigeko">SiGeKo + Foreman</div>
-      </div>
-      <div class="ib danger"><strong>⚠ Legal heart of the permit.</strong> Both parties must confirm below. Refusal = works stop immediately.<br><strong>DE:</strong> Beide Parteien müssen bestätigen. Verweigerung = sofortiger Arbeitsstopp.</div>
-      <div class="vbar">
-        <div class="vi"><span class="vi-label">Permit No.</span><span class="vi-value">${permitData.permit_number||'—'}</span></div>
-        <div class="vi-div"></div>
-        <div class="vi"><span class="vi-label">Valid From</span><span class="vi-value">${vFrom}</span></div>
-        <div class="vi-div"></div>
-        <div class="vi"><span class="vi-label">Valid Until</span><span class="vi-value green">${vUntil}</span></div>
-        <div class="vi-div"></div>
-        <div class="vi"><span class="vi-label">Renewal</span><span class="vi-value" style="color:var(--orange)">Every Tuesday</span></div>
-      </div>
-
-      <!-- SiGeKo Signature -->
-      <div class="sig-block">
-        <div class="sig-title">SiGeKo / BL – Work Release / Arbeitsfreigabe</div>
-        <div class="sig-confirm">
-          <input type="checkbox" id="sig1chk">
-          <div class="sig-confirm-text">
-            🇬🇧 I confirm all prerequisites §1–§8 checked, all controls effective. This permit is hereby <strong>RELEASED FOR WORK</strong>.<br>
-            🇩🇪 Ich bestätige alle Voraussetzungen §1–§8 geprüft, alle Maßnahmen wirksam. Dieser Schein ist hiermit <strong>FREIGEGEBEN</strong>.
-          </div>
-        </div>
-        <div class="sig-fields">
-          <div class="sig-field"><label>Full Name / Vollständiger Name *</label><input type="text" id="sig1name" placeholder="Type full name / Vollständigen Namen eingeben"></div>
-          <div class="sig-field"><label>Function / Funktion</label><input type="text" id="sig1role" placeholder="e.g. SiGeKo ECW GmbH"></div>
-        </div>
-        <div class="sig-ts" id="sig1ts">EN: Signature can also be applied physically on printed permit. / DE: Unterschrift kann auch physisch auf dem gedruckten Schein geleistet werden.</div>
-      </div>
-
-      <!-- Foreman Signature -->
-      <div class="sig-block">
-        <div class="sig-title">Foreman / Polier – On-site Acceptance / Übernahme</div>
-        <div class="sig-confirm">
-          <input type="checkbox" id="sig2chk">
-          <div class="sig-confirm-text">
-            🇬🇧 I confirm controls implemented on site, location known, TRM Alarm Protocol received. I accept <strong>on-site responsibility</strong>.<br>
-            🇩🇪 Ich bestätige Maßnahmen umgesetzt, Gelände bekannt, Alarmprotokoll erhalten. Ich übernehme die <strong>Vor-Ort-Verantwortung</strong>.
-          </div>
-        </div>
-        <div class="sig-fields">
-          <div class="sig-field"><label>Full Name / Vollständiger Name *</label><input type="text" id="sig2name" placeholder="Type full name / Vollständigen Namen eingeben"></div>
-          <div class="sig-field"><label>Company / Firma</label><input type="text" id="sig2company" placeholder="Executing company"></div>
-        </div>
-        <div class="sig-ts" id="sig2ts">EN: Physical signature on printed permit also required. / DE: Physische Unterschrift auf gedrucktem Schein ebenfalls erforderlich.</div>
-      </div>
-
-      <div class="btn-row">
-        <button class="btn btn-secondary" onclick="renderPermitStep(5)">← Back</button>
-        <button class="btn btn-success" onclick="releasePermit()" id="releaseBtn">✓ Release & Generate PDF / Freigeben & PDF erstellen</button>
-      </div>
-    </div>`;
-}
-
-function renderStep8(isS){
-  return `
-    <div class="card">
-      <div class="released-banner">
-        <h2>✓ PERMIT RELEASED / FREIGEGEBEN</h2>
-        <p>${permitData.permit_number||''} · Valid 1 week · Renewable every Tuesday</p>
-      </div>
-      <div class="ib success">
-        <strong>EN:</strong> Permit is active. Display printed copy at work location at all times. Workers must physically sign the briefing sheet.<br>
-        <strong>DE:</strong> Schein ist aktiv. Gedruckte Kopie immer am Arbeitsort aushängen. Arbeiter müssen physisch auf dem Unterweisungsblatt unterschreiben.
-      </div>
-      <div class="sec green">Download & Print / Herunterladen & Drucken</div>
-      <div class="ib"><strong>EN:</strong> Only SiGeKo can generate and print the final permit PDF after both signatures are confirmed.<br><strong>DE:</strong> Nur SiGeKo kann das finale Erlaubnis-PDF nach Bestätigung beider Unterschriften erstellen und drucken.</div>
-      <div class="btn-row">
-        <button class="btn btn-pdf" onclick="generatePDF()" id="pdfBtn">${isS?'⬇ Download PDF / PDF Herunterladen':'🔒 PDF locked – SiGeKo only / PDF gesperrt – Nur SiGeKo'}</button>
-        <button class="btn btn-secondary" onclick="window.print()">🖨 Print View / Druckansicht</button>
-        <button class="btn btn-secondary" onclick="startNewPermit()">↺ New Permit / Neuer Schein</button>
-      </div>
-    </div>`;
-}
-
-// ── Permit actions ─────────────────────────────────────────────
-function advanceStep(from){
-  // Save data from current fields
-  collectFormData();
-  renderPermitStep(from+1);
-}
-
-function collectFormData(){
-  // Collect all inputs
-  document.querySelectorAll('[id$="_en"],[id$="_de"]').forEach(el=>{
-    const key = el.id.replace(/_en$|_de$/,'');
-    if(!permitData[key]) permitData[key] = el.value||'';
-    else if(el.value) permitData[key] = el.value;
+function collectFields() {
+  document.querySelectorAll('[id^="f-"]').forEach(el => {
+    const key = el.id.replace('f-','');
+    permitData[key] = el.value || '';
   });
 }
 
-function toggleCi(el, v){
+function toggleCi(el, v) {
   el.classList.toggle('checked');
-  el.querySelector('.cb').textContent = el.classList.contains('checked')?'✓':'';
-  // Sync DE side
-  const de = document.getElementById('ci_de_'+v);
-  if(de){
-    de.classList.toggle('checked', el.classList.contains('checked'));
-    de.querySelector('.cb').textContent = el.classList.contains('checked')?'✓':'';
-  }
-  if(!permitData.permitTypes) permitData.permitTypes=[];
-  if(el.classList.contains('checked')) permitData.permitTypes.push(v);
-  else permitData.permitTypes = permitData.permitTypes.filter(x=>x!==v);
-}
-function toggleCiSync(v){
-  const en = document.getElementById('ci_en_'+v);
-  if(en) toggleCi(en,v);
-}
-function toggleCiSync2(v){
-  const en = document.getElementById('hz_en_'+v);
-  const de = document.getElementById('hz_de_'+v);
-  [en,de].forEach(el=>{if(!el)return;el.classList.toggle('checked');el.querySelector('.cb').textContent=el.classList.contains('checked')?'✓':'';});
-}
-function toggleCiSync3(v){
-  const en = document.getElementById('ppe_en_'+v);
-  const de = document.getElementById('ppe_de_'+v);
-  [en,de].forEach(el=>{if(!el)return;el.classList.toggle('checked');el.querySelector('.cb').textContent=el.classList.contains('checked')?'✓':'';});
-}
-function toggleRed(el,v){
-  el.classList.toggle('checked'); el.classList.toggle('red-check');
-  el.querySelector('.cb').textContent=el.classList.contains('checked')?'✓':'';
+  el.querySelector('.cb').textContent = el.classList.contains('checked') ? '✓' : '';
+  if (!permitData.permitTypes) permitData.permitTypes = [];
+  if (el.classList.contains('checked')) { if(!permitData.permitTypes.includes(v)) permitData.permitTypes.push(v); }
+  else permitData.permitTypes = permitData.permitTypes.filter(x => x !== v);
 }
 
-function evalGas(i){
-  const row = document.querySelectorAll('#permitSteps table tbody tr')[i-1];
-  if(!row) return;
-  const inputs = row.querySelectorAll('input[type="number"]');
-  const o2=parseFloat(inputs[0]?.value), ex=parseFloat(inputs[1]?.value), co=parseFloat(inputs[2]?.value), h2s=parseFloat(inputs[3]?.value);
-  const cell = document.getElementById('gr'+i);
-  if(!cell) return;
-  if(isNaN(o2)&&isNaN(ex)){cell.innerHTML='<span style="color:var(--muted);font-size:10px;">—</span>';return;}
-  const ok = o2>=19.5&&o2<=23&&ex<20&&co<=20&&h2s<=1;
-  cell.innerHTML = ok ? '<span class="gas-ok">✓ OK</span>' : '<span class="gas-nok">✗ STOP</span>';
+function toggleRedCi(el, v) {
+  el.classList.toggle('checked');
+  el.style.borderColor = el.classList.contains('checked') ? 'var(--sigred)' : '';
+  el.style.background = el.classList.contains('checked') ? 'rgba(255,59,59,0.08)' : '';
+  const cb = el.querySelector('.cb');
+  cb.textContent = el.classList.contains('checked') ? '✓' : '';
+  cb.style.background = el.classList.contains('checked') ? 'var(--sigred)' : '';
+  cb.style.borderColor = el.classList.contains('checked') ? 'var(--sigred)' : '';
+  cb.style.color = el.classList.contains('checked') ? '#fff' : '';
 }
 
-function addEqRow(){
+function addEqRow() {
   const tbody = document.getElementById('eqBody');
-  if(!tbody) return;
+  if (!tbody) return;
   const tr = document.createElement('tr');
   tr.innerHTML = `<td><input type="text" placeholder="Device"></td><td><input type="text" placeholder="Type"></td><td><input type="date"></td><td><input type="text" placeholder="Name"></td><td><input type="text" placeholder="Cert."></td>`;
   tbody.appendChild(tr);
 }
-function addWorkerRow(){
+
+function addWorkerRow() {
   const tbody = document.getElementById('workerBody');
-  if(!tbody) return;
-  const n = tbody.rows.length+1;
+  if (!tbody) return;
+  const n = tbody.rows.length + 1;
   const tr = document.createElement('tr');
   tr.innerHTML = `<td style="padding:7px 10px;font-family:var(--mono);font-size:10px;color:var(--muted2);text-align:center">${n}</td><td><input type="text" placeholder="SURNAME, Firstname"></td><td><input type="text" placeholder="Function"></td><td><input type="date" value="${today()}"></td><td style="text-align:center"><input type="checkbox" style="width:17px;height:17px;accent-color:var(--sigred);cursor:pointer;"></td>`;
   tbody.appendChild(tr);
 }
 
-async function submitPermit(){
-  collectFormData();
+async function submitPermit() {
+  collectFields();
   permitData.status = 'submitted';
   permitData.created_by = currentUser?.id;
   showLoader(true);
   try {
-    if(sb&&currentUser){
-      const {data,error} = editingPermitId ?
-        await sb.from('permits').update(permitData).eq('id',editingPermitId).select().single() :
-        await sb.from('permits').insert(permitData).select().single();
-      if(error) throw error;
-      editingPermitId = data.id;
-    }
-    renderPermitStep(4);
-  } catch(e){ alert('Error saving permit: '+e.message); }
+    const { data, error } = await sb.from('permits').insert(permitData).select().single();
+    if (error) throw error;
+    permitData.id = data.id;
+    renderStep(4);
+  } catch(e) { alert('Error saving: ' + e.message); }
   showLoader(false);
 }
 
-function sigekoApprove(){
-  collectFormData();
-  permitData.status = 'approved';
-  if(sb&&editingPermitId) sb.from('permits').update({status:'approved',conditions_en:permitData.conditions_en,conditions_de:permitData.conditions_de}).eq('id',editingPermitId);
-  renderPermitStep(5);
-}
-function requestRevision(){
-  if(sb&&editingPermitId) sb.from('permits').update({status:'revision_requested'}).eq('id',editingPermitId);
-  alert('Revision requested. Contractor will be notified. / Revision angefordert. Auftragnehmer wird benachrichtigt.');
+async function sigekoApprove() {
+  collectFields();
+  if (permitData.id) await sb.from('permits').update({ status: 'approved', conditions_en: permitData.conditions_en, conditions_de: permitData.conditions_de }).eq('id', permitData.id);
+  renderStep(5);
 }
 
-function releasePermit(){
-  const c1=document.getElementById('sig1chk')?.checked;
-  const c2=document.getElementById('sig2chk')?.checked;
-  const n1=document.getElementById('sig1name')?.value.trim();
-  const n2=document.getElementById('sig2name')?.value.trim();
-  if(!c1||!c2){alert('Both checkboxes must be ticked / Beide Kontrollkästchen müssen angekreuzt sein');return;}
-  if(!n1||!n2){alert('Both parties must enter their name / Beide Parteien müssen ihren Namen eingeben');return;}
+function requestRevision() {
+  if (permitData.id) sb.from('permits').update({ status: 'revision_requested' }).eq('id', permitData.id);
+  alert('Revision requested. / Revision angefordert.');
+}
+
+async function releasePermit() {
+  const c1 = document.getElementById('sig1chk')?.checked;
+  const c2 = document.getElementById('sig2chk')?.checked;
+  const n1 = document.getElementById('sig1name')?.value.trim();
+  const n2 = document.getElementById('sig2name')?.value.trim();
+  if (!c1||!c2) { alert('Both checkboxes must be ticked / Beide Kontrollkästchen ankreuzen'); return; }
+  if (!n1||!n2) { alert('Both parties must enter their name / Beide Namen eingeben'); return; }
   const ts = new Date().toLocaleString('en-GB');
-  permitData.sig1_name=n1; permitData.sig1_ts=ts;
-  permitData.sig2_name=n2; permitData.sig2_ts=ts;
-  permitData.status='active';
-  if(sb&&editingPermitId) sb.from('permits').update({status:'active',sig1_name:n1,sig2_name:n2,released_at:new Date().toISOString()}).eq('id',editingPermitId);
-  renderPermitStep(7);
+  permitData.sig1_name = n1; permitData.sig1_ts = ts; permitData.sig2_name = n2; permitData.sig2_ts = ts;
+  permitData.status = 'active';
+  if (permitData.id) await sb.from('permits').update({ status: 'active', sig1_name: n1, sig2_name: n2, released_at: new Date().toISOString() }).eq('id', permitData.id);
+  renderStep(7);
 }
 
-async function openPermit(id){
-  if(id==='demo1'||id==='demo2'||id==='demo3'){
-    // Demo mode
-    permitData = {permit_number:id==='demo1'?'ECW-TRM-2026-001':'ECW-TRM-2026-002',status:'active',company:'Demo Contractor',ba:'BA Q3',location:'Axis 14'};
-    renderPermitStep(7);
-    showView('permit');
-    return;
-  }
-  showLoader(true);
-  const {data} = await sb.from('permits').select('*').eq('id',id).single();
-  if(data){
-    permitData = data;
-    editingPermitId = id;
-    const stepMap = {draft:0,submitted:4,reviewing:4,approved:5,active:7,closed:7};
-    permitStep = stepMap[data.status]||0;
-    buildPermitForm();
-    renderPermitStep(permitStep);
-    showView('permit');
-  }
-  showLoader(false);
+// ── PDF Generation ─────────────────────────────────────────────────
+function generatePDF() {
+  if (currentProfile?.role !== 'sigeko') { alert('Only SiGeKo can generate the PDF.'); return; }
+  // Simple PDF using print
+  const content = `
+    <html><head><title>Work Permit ${permitData.permit_number}</title>
+    <style>
+      body { font-family: Arial, sans-serif; font-size: 11px; margin: 20px; }
+      h1 { color: #2B4EFF; font-size: 18px; }
+      h2 { color: #333; font-size: 13px; border-bottom: 1px solid #ccc; padding-bottom: 4px; margin-top: 16px; }
+      table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+      td, th { border: 1px solid #ccc; padding: 5px 8px; font-size: 10px; }
+      th { background: #f5f5f5; font-weight: bold; }
+      .header { background: #2B4EFF; color: white; padding: 12px; margin-bottom: 16px; }
+      .header h1 { color: white; margin: 0; }
+      .header p { margin: 4px 0 0; font-size: 10px; opacity: 0.8; }
+      .sig-box { border: 1px solid #2B4EFF; padding: 12px; margin-bottom: 10px; }
+      .sig-line { border-bottom: 1px solid #333; margin-top: 30px; }
+      .footer { margin-top: 20px; font-size: 9px; color: #888; border-top: 1px solid #ccc; padding-top: 8px; }
+      @media print { body { margin: 10px; } }
+    </style></head><body>
+    <div class="header">
+      <h1>ECW GmbH – Work Permit / Arbeitserlaubnisschein V3.0</h1>
+      <p>IAW / TRM Leuna-Leipzig · Fernwärmetrasse · ${permitData.permit_number||'—'}</p>
+    </div>
+    <table>
+      <tr><th>Permit No.</th><td>${permitData.permit_number||'—'}</td><th>Valid From / Gültig ab</th><td>${getNextTuesdayStr()}</td></tr>
+      <tr><th>Valid Until / Gültig bis</th><td style="color:green;font-weight:bold;">${getNextMondayStr()}</td><th>Renewal / Erneuerung</th><td>Every Tuesday / Jeden Dienstag</td></tr>
+    </table>
+    <h2>§1 General Information / Allgemeine Angaben</h2>
+    <table>
+      <tr><th>Company / Firma</th><td>${permitData.company||'—'}</td><th>Foreman / Polier</th><td>${permitData.foreman||'—'}</td></tr>
+      <tr><th>Mobile / Mobil</th><td>${permitData.foreman_tel||'—'}</td><th>BA</th><td>${permitData.ba||'—'}</td></tr>
+      <tr><th colspan="2">Location / Örtlichkeit</th><td colspan="2">${permitData.location||'—'}</td></tr>
+      <tr><th>Drawing / GB-Nr.</th><td>${permitData.drawing||'—'}</td><th>SiGePlan Rev.</th><td>${permitData.sige_plan||'—'}</td></tr>
+    </table>
+    <h2>§2–3 Task / Tätigkeitsbeschreibung</h2>
+    <p>${permitData.task_desc||'—'}</p>
+    <h2>§6 Emergency Plan / Notfallplan</h2>
+    <table>
+      <tr><th>Assembly Point / Sammelplatz</th><td>${permitData.assembly||'—'}</td><th>First Aider / Ersthelfer</th><td>${permitData.first_aider||'—'} · ${permitData.first_aider_tel||'—'}</td></tr>
+      <tr><th colspan="2">Hospital / KH</th><td colspan="2">${permitData.hospital||'—'}</td></tr>
+    </table>
+    <h2>§8 SiGeKo Conditions / SiGeKo Auflagen</h2>
+    <p><strong>EN:</strong> ${permitData.conditions_en||'—'}</p>
+    <p><strong>DE:</strong> ${permitData.conditions_de||'—'}</p>
+    <h2>§9 Safety Briefing Record / Unterweisungsnachweis</h2>
+    <table>
+      <tr><th>#</th><th>Name (Block letters)</th><th>Function / Qualification</th><th>Date</th><th>Physical Signature / Physische Unterschrift</th></tr>
+      ${[1,2,3,4,5,6].map(i=>`<tr><td style="text-align:center">${i}</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td></td><td></td><td><div style="border-bottom:1px solid #333;margin-top:20px;"></div></td></tr>`).join('')}
+    </table>
+    <p><strong>Briefing by / Unterweisung durch:</strong> ${permitData.brief_by||'_______________________________'}</p>
+    <h2>§11 Work Release / Freigabe und Unterschriften</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="sig-box">
+        <strong>SiGeKo / BL – Work Release / Arbeitsfreigabe</strong><br><br>
+        EN: I confirm all controls effective – WORK RELEASED.<br>
+        DE: Alle Maßnahmen wirksam – SCHEIN FREIGEGEBEN.<br><br>
+        Name: ${permitData.sig1_name||'_______________________________'}<br>
+        Timestamp: ${permitData.sig1_ts||'—'}<br>
+        <div class="sig-line"></div>
+        <small>Signature / Unterschrift</small>
+      </div>
+      <div class="sig-box">
+        <strong>Foreman / Polier – Acceptance / Übernahme</strong><br><br>
+        EN: Controls implemented – on-site responsibility accepted.<br>
+        DE: Maßnahmen umgesetzt – Vor-Ort-Verantwortung übernommen.<br><br>
+        Name: ${permitData.sig2_name||'_______________________________'}<br>
+        Company: ${permitData.sig2_company||'—'}<br>
+        <div class="sig-line"></div>
+        <small>Signature / Unterschrift</small>
+      </div>
+    </div>
+    <h2>§12 Close-Out / Abmeldung nach Arbeitsende</h2>
+    <table>
+      <tr><td>☐ Works fully completed / Arbeiten vollständig abgeschlossen</td><td>☐ Area safe & clean / Sicher & sauber hinterlassen</td></tr>
+      <tr><td>☐ Fire watch completed / Brandwache abgeschlossen</td><td>☐ Adjacent trades notified / Nachbargewerke informiert</td></tr>
+    </table>
+    <table style="margin-top:8px;">
+      <tr><th>Foreman sign-off / Polier Abmeldung</th><th>Date / Datum</th><th>SiGeKo acceptance / Abnahme</th><th>Date / Datum</th></tr>
+      <tr><td style="height:40px;"></td><td></td><td></td><td></td></tr>
+    </table>
+    <div class="footer">ECW GmbH · Work Permit V3.0 · IAW/TRM Leuna-Leipzig · Retention / Aufbewahrung: 5 Jahre · Ref: ArbSchG · BaustellV · DGUV Vorschrift 1 · BetrSichV · Generated: ${new Date().toLocaleString('en-GB')}</div>
+    </body></html>`;
+  const win = window.open('', '_blank');
+  win.document.write(content);
+  win.document.close();
+  win.onload = () => win.print();
 }
 
-function bindStep(n){ /* hooks if needed */ }
-
-// ── PDF Generation (SiGeKo only) ───────────────────────────────
-function generatePDF(){
-  if(currentProfile?.role !== 'sigeko'){
-    alert('Only SiGeKo can generate the permit PDF. / Nur SiGeKo kann das Erlaubnis-PDF erstellen.');
-    return;
-  }
-  const {jsPDF} = window.jspdf;
-  const doc = new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-  const W=210, H=297;
-  const m=12; // margin
-
-  // Colors
-  const RED=[200,16,46], YELLOW=[245,200,0], DARK=[10,10,10], LIGHT=[224,224,224];
-  const PANEL=[30,30,30], MID=[40,40,40], MUTED=[100,100,100], GREEN=[34,197,94];
-  const SIGRED=[255,59,59], BLUE=[59,130,246];
-
-  // Helper
-  const setFill=(c)=>doc.setFillColor(c[0],c[1],c[2]);
-  const setTxt=(c)=>doc.setTextColor(c[0],c[1],c[2]);
-  const setDraw=(c)=>doc.setDrawColor(c[0],c[1],c[2]);
-  const rect=(x,y,w,h,fill,draw)=>{
-    if(fill){setFill(fill);doc.rect(x,y,w,h,'F');}
-    if(draw){setDraw(draw);doc.rect(x,y,w,h,'S');}
-  };
-  const line=(x1,y1,x2,y2,c,lw=0.3)=>{doc.setLineWidth(lw);setDraw(c);doc.line(x1,y1,x2,y2);};
-  const txt=(text,x,y,size,color,align='left',bold=false)=>{
-    doc.setFontSize(size);
-    setTxt(color);
-    doc.setFont('helvetica',bold?'bold':'normal');
-    doc.text(String(text||''),x,y,{align});
-  };
-  const biRow=(label_en,label_de,val,y)=>{
-    rect(m,y,W-m*2,8,MID);
-    line(m,y,W-m,y,DARK);
-    txt('EN '+label_en+':',m+2,y+4,6,BLUE);
-    txt(val||'—',m+35,y+4,7,LIGHT);
-    txt('DE '+label_de+':',m+2,y+7,6,YELLOW);
-    txt(val||'—',m+35,y+7,7,LIGHT);
-    return y+9;
-  };
-
-  let y = m;
-
-  // ── HEADER ──
-  rect(0,0,W,22,RED);
-  rect(0,0,22,22,DARK);
-  txt('ECW',3,8,10,YELLOW,undefined,true);
-  txt('GmbH',3,13,6,[255,255,255]);
-  line(22,0,22,22,YELLOW,1.5);
-  txt('WORK PERMIT / ARBEITSERLAUBNISSCHEIN',26,9,13,[255,255,255],undefined,true);
-  txt('IAW / TRM Leuna-Leipzig · Fernwärmetrasse',26,16,7,[220,220,220]);
-  rect(W-50,0,50,22,DARK);
-  txt(permitData.permit_number||'—',W-m,8,9,YELLOW,'right',true);
-  txt('V3.0 · ECW GmbH',W-m,15,6,MUTED,'right');
-  y=26;
-
-  // ── VALIDITY BAR ──
-  rect(m,y,W-m*2,10,MID);
-  const vFrom=getNextTuesdayStr(), vUntil=getNextMondayStr();
-  txt('VALID FROM / GÜLTIG AB:',m+2,y+4,6,MUTED);
-  txt(vFrom,m+40,y+4,7,YELLOW,undefined,true);
-  txt('VALID UNTIL / GÜLTIG BIS:',m+2,y+8,6,MUTED);
-  txt(vUntil,m+40,y+8,7,GREEN,undefined,true);
-  txt('RENEWAL / ERNEUERUNG: Every Tuesday / Jeden Dienstag',W-m,y+6,7,[249,115,22],'right');
-  y+=14;
-
-  // ── §1 GENERAL INFO ──
-  rect(m,y,W-m*2,6,SIGRED);
-  txt('§ 1  GENERAL INFORMATION / ALLGEMEINE ANGABEN',m+3,y+4,8,[255,255,255],undefined,true);
-  y+=7;
-
-  const p=permitData;
-  const half=(W-m*2)/2-1;
-
-  // Two column info
-  const infoRows=[
-    ['Company / Firma',p.company],['Foreman / Polier',p.foreman],
-    ['Mobile / Mobil',p.foremanTel],['BA',p.ba],
-    ['Location / Örtlichkeit',p.location],['SiGePlan Rev.',p.sigePlan],
-  ];
-  let col=0;
-  infoRows.forEach((row,i)=>{
-    const cx = col===0 ? m : m+half+2;
-    const ry = y+(Math.floor(i/2))*9;
-    rect(cx,ry,half,8,MID);
-    txt(row[0]+':',cx+2,ry+3.5,6,MUTED);
-    txt(row[1]||'—',cx+2,ry+7,7,LIGHT);
-    col = col===0?1:0;
-  });
-  y += Math.ceil(infoRows.length/2)*9+2;
-
-  // ── §3 TASK ──
-  rect(m,y,W-m*2,6,[40,70,120]);
-  txt('§ 2–3  TASK / TÄTIGKEITSBESCHREIBUNG',m+3,y+4,8,[255,255,255],undefined,true);
-  y+=7;
-  rect(m,y,W-m*2,20,MID);
-  txt('EN: '+(p.taskDesc||'—').substring(0,150),m+2,y+5,7,LIGHT);
-  txt('DE: '+(p.taskDesc||'—').substring(0,150),m+2,y+12,7,LIGHT);
-  y+=22;
-
-  // ── §5 SiGeKo CONDITIONS ──
-  rect(m,y,W-m*2,6,SIGRED);
-  txt('§ 8  SIGEKO CONDITIONS / SIGEKO AUFLAGEN',m+3,y+4,8,[255,255,255],undefined,true);
-  y+=7;
-  const condEN=p.conditions_en||'—', condDE=p.conditions_de||'—';
-  rect(m,y,W-m*2,18,MID);
-  line(m,y,m,y+18,SIGRED,1.5);
-  txt('EN: '+condEN.substring(0,160),m+3,y+5,6.5,LIGHT);
-  txt('DE: '+condDE.substring(0,160),m+3,y+11,6.5,LIGHT);
-  y+=20;
-
-  // ── §6 EMERGENCY ──
-  rect(m,y,W-m*2,6,[180,80,0]);
-  txt('§ 6  EMERGENCY PLAN / NOTFALLPLAN',m+3,y+4,8,[255,255,255],undefined,true);
-  y+=7;
-  rect(m,y,W-m*2,10,MID);
-  txt('EN Assembly Point / DE Sammelplatz: '+(p.assembly||'—'),m+2,y+4,7,LIGHT);
-  txt('EN First Aider / DE Ersthelfer: '+(p.firstAider||'—')+'  ·  Tel: '+(p.firstAiderTel||'—')+'  ·  Hospital / KH: '+(p.hospital||'—'),m+2,y+8,7,LIGHT);
-  y+=12;
-
-  // ── §9 BRIEFING ──
-  rect(m,y,W-m*2,6,SIGRED);
-  txt('§ 9  SAFETY BRIEFING RECORD / UNTERWEISUNGSNACHWEIS',m+3,y+4,8,[255,255,255],undefined,true);
-  y+=7;
-  rect(m,y,W-m*2,6,MID);
-  txt('Name',m+2,y+4,6,MUTED);
-  txt('Function / Qualifikation',m+52,y+4,6,MUTED);
-  txt('Date / Datum',m+102,y+4,6,MUTED);
-  txt('Phys. Signature / Physische Unterschrift',m+130,y+4,6,MUTED);
-  y+=7;
-  [1,2,3,4,5,6].forEach(i=>{
-    rect(m,y,W-m*2,8,i%2===0?PANEL:MID);
-    line(m+50,y,m+50,y+8,[60,60,60]);
-    line(m+100,y,m+100,y+8,[60,60,60]);
-    line(m+128,y,m+128,y+8,[60,60,60]);
-    // Signature line
-    line(m+135,y+6,W-m-5,y+6,MUTED);
-    y+=8;
-  });
-  rect(m,y,W-m*2,8,MID);
-  txt('EN: Briefing by / DE: Unterweisung durch: '+(p.briefBy||'___________________________'),m+2,y+5,7,LIGHT);
-  y+=10;
-
-  // ── §11 SIGNATURES ──
-  if(y>230){ doc.addPage(); y=m; }
-  rect(m,y,W-m*2,6,SIGRED);
-  txt('§ 11  WORK RELEASE / FREIGABE UND UNTERSCHRIFTEN',m+3,y+4,8,[255,255,255],undefined,true);
-  y+=7;
-
-  const sigH=36;
-  // Left sig: SiGeKo
-  rect(m,y,half,sigH,[20,0,0]);
-  line(m,y,m,y+sigH,SIGRED,1.5);
-  txt('SiGeKo / Bauleitung – Work Release / Arbeitsfreigabe',m+3,y+5,7,SIGRED,undefined,true);
-  txt('EN: I confirm all controls effective – WORK RELEASED',m+3,y+10,6,[255,180,180]);
-  txt('DE: Alle Maßnahmen wirksam – SCHEIN FREIGEGEBEN',m+3,y+14,6,[255,180,180]);
-  txt('Name: '+(p.sig1_name||'_______________________'),m+3,y+20,7,[255,255,255]);
-  txt('Timestamp: '+(p.sig1_ts||'_______________________'),m+3,y+25,6,MUTED);
-  txt('Signature / Unterschrift: ____________________________',m+3,y+31,6,SIGRED);
-
-  // Right sig: Polier
-  rect(m+half+2,y,half,sigH,[20,10,0]);
-  line(m+half+2,y,m+half+2,y+sigH,[249,115,22],1.5);
-  txt('Polier / Vorarbeiter – Acceptance / Übernahme',m+half+5,y+5,7,[249,115,22],undefined,true);
-  txt('EN: Controls implemented – on-site responsibility accepted',m+half+5,y+10,6,[255,200,100]);
-  txt('DE: Maßnahmen umgesetzt – Vor-Ort-Verantwortung übernommen',m+half+5,y+14,6,[255,200,100]);
-  txt('Name: '+(p.sig2_name||'_______________________'),m+half+5,y+20,7,[255,255,255]);
-  txt('Company / Firma: '+(p.sig2_company||'_______________________'),m+half+5,y+25,6,MUTED);
-  txt('Signature / Unterschrift: ____________________________',m+half+5,y+31,6,[249,115,22]);
-  y+=sigH+4;
-
-  // ── §12 CLOSE-OUT ──
-  rect(m,y,W-m*2,6,GREEN);
-  txt('§ 12  CLOSE-OUT / ABMELDUNG',m+3,y+4,8,DARK,undefined,true);
-  y+=7;
-  rect(m,y,W-m*2,24,MID);
-  ['Works fully completed / Arbeiten vollständig abgeschlossen □',
-   'Area safe & clean / Arbeitsplatz sicher & sauber □',
-   'Fire watch completed / Brandwache abgeschlossen □',
-   'Adjacent trades notified / Nachbargewerke informiert □',
-  ].forEach((item,i)=>{
-    txt(item,m+3,y+4+(i*5),6,LIGHT);
-  });
-  txt('Foreman sign-off: ____________________________  Date: __________',m+3,y+21,6,LIGHT);
-  y+=26;
-
-  // ── FOOTER ──
-  rect(0,H-14,W,14,DARK);
-  line(0,H-14,W,H-14,RED,0.5);
-  txt('ECW GmbH · Arbeitserlaubnisschein V3.0 · IAW/TRM Leuna-Leipzig · Fernwärmetrasse',m,H-8,6,MUTED);
-  txt('Retention / Aufbewahrung: 5 Jahre · Ref: ArbSchG · BaustellV · DGUV Vorschrift 1 · BetrSichV · Generated: '+new Date().toLocaleDateString('en-GB'),m,H-4,5.5,MUTED);
-  txt(permitData.permit_number||'',W-m,H-8,8,YELLOW,'right',true);
-
-  // Save
-  doc.save(`WorkPermit_${permitData.permit_number||'draft'}_${today()}.pdf`);
-}
-
-// ── Helpers ─────────────────────────────────────────────────────
-function today(){ return new Date().toISOString().split('T')[0]; }
-function formatDate(d){ return d ? new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}) : '—'; }
-function showLoader(v){ document.getElementById('loader').classList.toggle('active',v); }
-function showMsg(id,msg,type){ const el=document.getElementById(id); if(el){el.textContent=msg;el.className='login-msg '+type;} }
-
-function getNextTuesdayStr(){
-  const d=new Date();
-  const day=d.getDay();
-  const diff=day<=2?(2-day):(9-day);
-  d.setDate(d.getDate()+diff);
-  d.setHours(6,0,0,0);
+// ── Helpers ────────────────────────────────────────────────────────
+function today() { return new Date().toISOString().split('T')[0]; }
+function showLoader(v) { document.getElementById('loader').classList.toggle('active', v); }
+function showMsg(id, msg, type) { const el = document.getElementById(id); if(el){el.textContent=msg;el.className='msg '+type;} }
+function getNextTuesdayStr() {
+  const d = new Date(); const day = d.getDay(); const diff = day<=2?(2-day):(9-day);
+  d.setDate(d.getDate()+diff); d.setHours(6,0,0,0);
   return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+' 06:00';
 }
-function getNextMondayStr(){
-  const d=new Date();
-  const day=d.getDay();
-  const diff=day<=2?(2-day):(9-day);
-  d.setDate(d.getDate()+diff+6);
-  d.setHours(22,0,0,0);
+function getNextMondayStr() {
+  const d = new Date(); const day = d.getDay(); const diff = day<=2?(2-day):(9-day);
+  d.setDate(d.getDate()+diff+6); d.setHours(22,0,0,0);
   return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+' 22:00';
-}
-
-function initWeekDisplay(){
-  const d=new Date();
-  const onejan=new Date(d.getFullYear(),0,1);
-  const wk=Math.ceil((((d-onejan)/86400000)+onejan.getDay()+1)/7);
-  const el=document.getElementById('tb-week');
-  if(el) el.textContent=`KW ${wk}/${d.getFullYear()} · Renewal every Tuesday`;
-}
-
-function refreshUI(){ /* rebuild dynamic labels if needed */ }
-
-function refreshUI(){
-  document.getElementById('pend-title').textContent = t('pending');
-  document.getElementById('pend-sub').textContent = t('pendingSub');
 }
 </script>
 </body>

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ECW GmbH – Work Permit System</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
+<script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@300;400;500;600&display=swap');
 :root{--red:#2B4EFF;--yellow:#F5C800;--bg:#080808;--s1:#111;--s2:#181818;--s3:#202020;--b1:#222;--b2:#333;--text:#E0E0E0;--muted:#666;--muted2:#999;--green:#22C55E;--green-d:rgba(34,197,94,0.1);--orange:#F97316;--blue:#3B82F6;--sigred:#FF3B3B;--sigred-d:rgba(255,59,59,0.08);--mono:'IBM Plex Mono',monospace;--sans:'Barlow',sans-serif;--cond:'Barlow Condensed',sans-serif;}
@@ -283,7 +283,10 @@ let sb, currentUser, currentProfile, permitData = {}, permitStep = 0;
 window.onload = async function() {
   showLoader(true);
   try {
+    console.log('Supabase lib:', typeof window.supabase);
+    if (!window.supabase) throw new Error('Supabase library failed to load from CDN');
     sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    console.log('Client created:', !!sb);
     const { data: { session } } = await sb.auth.getSession();
     if (session) {
       await loadProfile(session.user);
@@ -567,12 +570,58 @@ function step2() {
 }
 
 function step3() {
+  const hazards = [['fire','🔥 Fire / Brandgefahr'],['fall2','📏 Fall / Absturzgefahr'],['elec','⚡ Electrical / Elektrisch'],['confined2','⬛ Confined space / Beengter Raum'],['dust2','💨 Dust/gases / Staub/Gase'],['crane2','🏗 Crane / Kran'],['excavation','⛏ Excavation / Erdeinbruch'],['noise','🔊 Noise >85dB / Lärm'],['chem','☣ Hazardous subst. / Gefahrstoffe'],['vibration','📳 Vibration']];
+  const measures = [
+    ['mci_fire_ext','🧯 Fire extinguisher on site / Feuerlöscher'],
+    ['mci_area_cordoned','🚧 Area cordoned off / Abgesperrt'],
+    ['mci_fence_2m','🚧 Protective fence H=2m / Schutzzaun 2m'],
+    ['mci_fence_1m','🚧 Protective fence H=1m / Schutzzaun 1m'],
+    ['mci_fire_watch','👁 Fire watch / Brandwache'],
+    ['mci_no_combustibles','🚫 Remove combustibles / Brennbares entfernt'],
+    ['mci_safety_observer','👷 Safety observer / Sicherungsposten'],
+    ['mci_adjacent_informed','📢 Adjacent trades informed / Nachbargewerke'],
+    ['mci_ventilation','💨 Ventilation active / Belüftung aktiv'],
+    ['mci_gas_measure','🔬 Gas measurement / Gasfreimessung'],
+    ['mci_shoring','🪵 DIN 4124 shoring / Verbau'],
+    ['mci_hand_dig','✋ Hand excavation / Handschachtung'],
+    ['mci_utility_plans','📋 Utility plans / Spartenpläne'],
+    ['mci_lockout','🔒 Lockout/Tagout / Abschalten'],
+    ['mci_rescue_plan','🚑 Rescue plan / Rettungsplan'],
+    ['mci_spill_kit','🧴 Spill kit / Auffangmittel'],
+    ['mci_time_limit','⏱ Vibration time limit / Zeitbegrenzung'],
+  ];
+  const ppe = [
+    ['pci_helmet','🪖 Helmet EN 397 / Schutzhelm'],
+    ['pci_shoes','👟 Shoes S3 / Sicherheitsschuhe'],
+    ['pci_vest','🦺 Hi-vis vest / Warnweste'],
+    ['pci_glasses','🥽 Glasses EN 166 / Schutzbrille'],
+    ['pci_hearing','🔇 Hearing prot. EN 352 / Gehörschutz'],
+    ['pci_gloves','🧤 Gloves / Schutzhandschuhe'],
+    ['pci_resp','😷 Respiratory EN 149 / Atemschutz'],
+    ['pci_harness','🪝 Fall arrest EN 361 / PSAgA'],
+    ['pci_welder','🧥 Welder prot. EN 11611 / Schweißerschutz'],
+  ];
   return `<div class="card">
-    <div class="card-title">§4 Hazard Analysis & Controls / Gefährdungsanalyse</div>
-    <div style="font-family:var(--mono);font-size:9px;color:var(--muted2);text-transform:uppercase;margin-bottom:8px;">Hazards / Gefährdungen</div>
-    <div class="check-grid">${[['fire','🔥 Fire'],['fall2','📏 Fall'],['elec','⚡ Electrical'],['confined2','⬛ Confined space'],['dust2','💨 Dust/gases'],['crane2','🏗 Crane'],['excavation','⛏ Excavation'],['noise','🔊 Noise >85dB'],['chem','☣ Hazardous subst.'],['vibration','📳 Vibration']].map(([v,l])=>`<div class="ci" onclick="toggleCi(this,'${v}')"><div class="cb"></div><span class="cl">${l}</span></div>`).join('')}</div>
-    <div style="font-family:var(--mono);font-size:9px;color:var(--muted2);text-transform:uppercase;margin:12px 0 8px;">PPE / PSA</div>
-    <div class="check-grid">${[['helmet','🪖 Helmet EN 397'],['shoes','👟 Shoes S3'],['vest','🦺 Hi-vis vest'],['glasses','🥽 Glasses'],['hearing','🔇 Hearing prot.'],['gloves','🧤 Gloves'],['resp','😷 Respiratory'],['harness','🪝 Fall arrest'],['welder','🧥 Welder prot.']].map(([v,l])=>`<div class="ci" onclick="toggleCi(this,'${v}')"><div class="cb"></div><span class="cl">${l}</span></div>`).join('')}</div>
+    <div class="card-title">§4 Hazard Analysis & Controls / Gefährdungsanalyse & Maßnahmen</div>
+    <div class="card-sub">Tick a hazard — control measures and PPE auto-fill! / Gefährdung ankreuzen — Maßnahmen und PSA werden automatisch ausgefüllt!</div>
+
+    <div style="font-family:var(--mono);font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;padding:8px 0;border-bottom:1px solid var(--b1);">
+      ⚠ Hazards / Gefährdungen — <span style="color:#2B4EFF;">tick to auto-fill measures below</span>
+    </div>
+    <div class="check-grid">${hazards.map(([v,l])=>`<div class="ci" onclick="toggleCi(this,'${v}')"><div class="cb"></div><span class="cl">${l}</span></div>`).join('')}</div>
+
+    <div style="font-family:var(--mono);font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.1em;margin:16px 0 8px;padding:8px 0;border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:8px;">
+      🛡 Control Measures / Schutzmaßnahmen
+      <span style="margin-left:auto;color:#2B4EFF;font-size:8px;">Auto-filled from hazards above / Automatisch aus Gefährdungen</span>
+    </div>
+    <div class="check-grid">${measures.map(([id,l])=>`<div class="ci" id="${id}" onclick="manualToggle(this)"><div class="cb"></div><span class="cl">${l}</span></div>`).join('')}</div>
+
+    <div style="font-family:var(--mono);font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.1em;margin:16px 0 8px;padding:8px 0;border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:8px;">
+      🦺 PPE / PSA-Spezifikation
+      <span style="margin-left:auto;color:#2B4EFF;font-size:8px;">Auto-filled from hazards above / Automatisch ausgefüllt</span>
+    </div>
+    <div class="check-grid">${ppe.map(([id,l])=>`<div class="ci" id="${id}" onclick="manualToggle(this)"><div class="cb"></div><span class="cl">${l}</span></div>`).join('')}</div>
+
     <div class="btn-row"><button class="btn btn-secondary" onclick="renderStep(1)">← Back</button><button class="btn btn-primary" onclick="nextStep(2)">Next →</button></div>
   </div>`;
 }
@@ -686,12 +735,120 @@ function collectFields() {
   });
 }
 
+// Hazard → auto-measures + PPE mapping
+const HAZARD_MAP = {
+  fire:       { measures: ['fire_ext','area_cordoned','fire_watch','no_combustibles'], ppe: ['helmet','vest','gloves'] },
+  fall2:      { measures: ['area_cordoned','fence_2m','safety_observer'], ppe: ['helmet','shoes','vest','harness'] },
+  elec:       { measures: ['area_cordoned','safety_observer','lockout'], ppe: ['helmet','shoes','vest','gloves'] },
+  confined2:  { measures: ['ventilation','gas_measure','safety_observer','rescue_plan'], ppe: ['helmet','shoes','vest','resp','harness'] },
+  dust2:      { measures: ['ventilation','area_cordoned'], ppe: ['helmet','shoes','vest','resp','glasses'] },
+  crane2:     { measures: ['area_cordoned','fence_2m','safety_observer','adjacent_informed'], ppe: ['helmet','shoes','vest'] },
+  excavation: { measures: ['shoring','hand_dig','utility_plans','area_cordoned'], ppe: ['helmet','shoes','vest','gloves'] },
+  noise:      { measures: ['area_cordoned','adjacent_informed'], ppe: ['helmet','shoes','vest','hearing'] },
+  chem:       { measures: ['area_cordoned','ventilation','spill_kit'], ppe: ['helmet','shoes','vest','gloves','resp','glasses'] },
+  vibration:  { measures: ['time_limit'], ppe: ['helmet','shoes','vest','gloves'] },
+};
+
+// Permit type → auto-measures
+const TYPE_MAP = {
+  hot_work:   { measures: ['fire_ext','fire_watch','area_cordoned','no_combustibles'], ppe: ['helmet','shoes','vest','welder','hearing','gloves'] },
+  confined:   { measures: ['ventilation','gas_measure','safety_observer','rescue_plan'], ppe: ['helmet','shoes','vest','resp','harness'] },
+  earthworks: { measures: ['shoring','hand_dig','utility_plans','area_cordoned'], ppe: ['helmet','shoes','vest','gloves'] },
+  fall:       { measures: ['area_cordoned','fence_2m','safety_observer'], ppe: ['helmet','shoes','vest','harness'] },
+  crane:      { measures: ['area_cordoned','fence_2m','safety_observer','adjacent_informed'], ppe: ['helmet','shoes','vest'] },
+  dust:       { measures: ['ventilation','area_cordoned'], ppe: ['helmet','shoes','vest','resp'] },
+  chemicals:  { measures: ['area_cordoned','ventilation','spill_kit'], ppe: ['helmet','shoes','vest','gloves','resp','glasses'] },
+};
+
+// Measure ID → grid item ID mapping
+const MEASURE_IDS = {
+  fire_ext:         'mci_fire_ext',
+  area_cordoned:    'mci_area_cordoned',
+  fire_watch:       'mci_fire_watch',
+  no_combustibles:  'mci_no_combustibles',
+  fence_2m:         'mci_fence_2m',
+  fence_1m:         'mci_fence_1m',
+  safety_observer:  'mci_safety_observer',
+  adjacent_informed:'mci_adjacent_informed',
+  ventilation:      'mci_ventilation',
+  gas_measure:      'mci_gas_measure',
+  shoring:          'mci_shoring',
+  hand_dig:         'mci_hand_dig',
+  utility_plans:    'mci_utility_plans',
+  lockout:          'mci_lockout',
+  rescue_plan:      'mci_rescue_plan',
+  spill_kit:        'mci_spill_kit',
+  time_limit:       'mci_time_limit',
+};
+
+const PPE_IDS = {
+  helmet:'pci_helmet', shoes:'pci_shoes', vest:'pci_vest',
+  glasses:'pci_glasses', hearing:'pci_hearing', gloves:'pci_gloves',
+  resp:'pci_resp', harness:'pci_harness', welder:'pci_welder',
+};
+
+function activateCi(id) {
+  const el = document.getElementById(id);
+  if (el && !el.classList.contains('checked')) {
+    el.classList.add('checked');
+    el.querySelector('.cb').textContent = '✓';
+    el.style.borderColor = 'var(--yellow)';
+    el.style.background = 'rgba(245,200,0,0.1)';
+  }
+}
+
+function autoFillMeasures(mapEntry) {
+  if (!mapEntry) return;
+  mapEntry.measures?.forEach(m => activateCi(MEASURE_IDS[m]));
+  mapEntry.ppe?.forEach(p => activateCi(PPE_IDS[p]));
+  // Show notification
+  showAutoFillToast(mapEntry.measures?.length || 0, mapEntry.ppe?.length || 0);
+}
+
+function showAutoFillToast(measures, ppe) {
+  let toast = document.getElementById('autoFillToast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'autoFillToast';
+    toast.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#2B4EFF;color:#fff;padding:12px 18px;border-radius:6px;font-family:var(--mono);font-size:11px;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.4);transition:opacity 0.3s;';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = `✓ Auto-filled: ${measures} control measures + ${ppe} PPE items`;
+  toast.style.opacity = '1';
+  setTimeout(() => { toast.style.opacity = '0'; }, 3000);
+}
+
 function toggleCi(el, v) {
   el.classList.toggle('checked');
-  el.querySelector('.cb').textContent = el.classList.contains('checked') ? '✓' : '';
-  if (!permitData.permitTypes) permitData.permitTypes = [];
-  if (el.classList.contains('checked')) { if(!permitData.permitTypes.includes(v)) permitData.permitTypes.push(v); }
-  else permitData.permitTypes = permitData.permitTypes.filter(x => x !== v);
+  const cb = el.querySelector('.cb');
+  cb.textContent = el.classList.contains('checked') ? '✓' : '';
+  if (el.classList.contains('checked')) {
+    el.style.borderColor = 'var(--yellow)';
+    el.style.background = 'rgba(245,200,0,0.1)';
+    // Auto-fill measures based on hazard or permit type
+    const map = HAZARD_MAP[v] || TYPE_MAP[v];
+    if (map) autoFillMeasures(map);
+    if (!permitData.permitTypes) permitData.permitTypes = [];
+    if (!permitData.permitTypes.includes(v)) permitData.permitTypes.push(v);
+  } else {
+    el.style.borderColor = '';
+    el.style.background = '';
+    permitData.permitTypes = (permitData.permitTypes||[]).filter(x => x !== v);
+  }
+}
+
+
+function manualToggle(el) {
+  el.classList.toggle('checked');
+  const cb = el.querySelector('.cb');
+  cb.textContent = el.classList.contains('checked') ? '✓' : '';
+  if (el.classList.contains('checked')) {
+    el.style.borderColor = 'var(--yellow)';
+    el.style.background = 'rgba(245,200,0,0.1)';
+  } else {
+    el.style.borderColor = '';
+    el.style.background = '';
+  }
 }
 
 function toggleRedCi(el, v) {
